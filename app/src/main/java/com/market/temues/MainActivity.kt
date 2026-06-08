@@ -2,13 +2,16 @@ package com.market.temues
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.market.temues.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -25,16 +28,24 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        // Configurar la barra de acción con el controlador de navegación
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment, R.id.searchFragment, R.id.chatFragment, R.id.profileFragment
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        
-        // Vincular el BottomNavigationView con el NavController
         binding.bottomNavigation.setupWithNavController(navController)
+
+        val authDestinations = setOf(
+            R.id.loginFragment, R.id.registerFragment, R.id.forgotPasswordFragment
+        )
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val isAuthScreen = destination.id in authDestinations
+            binding.toolbar.isVisible = !isAuthScreen
+            binding.bottomNavigation.isVisible = !isAuthScreen
+            supportActionBar?.setDisplayHomeAsUpEnabled(!isAuthScreen)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

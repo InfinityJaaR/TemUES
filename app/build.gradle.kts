@@ -78,6 +78,10 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
+    // Social Auth
+    implementation(libs.play.services.auth)
+    implementation(libs.facebook.login)
+
     // Payments & ML
     implementation(libs.stripe)
     implementation(libs.tensorflow.lite)

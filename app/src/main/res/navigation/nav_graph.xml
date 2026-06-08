@@ -3,30 +3,85 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/loginFragment">
 
+    <!-- Auth Screens -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.market.temues.ui.auth.LoginFragment"
+        android:label="@string/login_title"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+
+        <action
+            android:id="@+id/action_login_to_forgotPassword"
+            app:destination="@id/forgotPasswordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.market.temues.ui.auth.RegisterFragment"
+        android:label="@string/register_title"
+        tools:layout="@layout/fragment_register">
+
+        <action
+            android:id="@+id/action_register_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_register_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.market.temues.ui.auth.ForgotPasswordFragment"
+        android:label="@string/forgot_title"
+        tools:layout="@layout/fragment_forgot_password" />
+
+    <!-- Main Screens -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.market.temues.ui.home.HomeFragment"
-        android:label="Inicio"
+        android:label="@string/nav_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.market.temues.ui.search.SearchFragment"
-        android:label="Buscar"
+        android:label="@string/nav_search"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.market.temues.ui.chat.ChatListFragment"
-        android:label="Mensajes"
+        android:label="@string/nav_chat"
         tools:layout="@layout/fragment_chat_list" />
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.market.temues.ui.profile.ProfileFragment"
-        android:label="Perfil"
-        tools:layout="@layout/fragment_profile" />
+        android:label="@string/nav_profile"
+        tools:layout="@layout/fragment_profile">
+
+        <action
+            android:id="@+id/action_profile_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>
