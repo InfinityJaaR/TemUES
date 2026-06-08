@@ -1,125 +1,122 @@
-# TemUES - Guía de Desarrollo para el Equipo
+# TemUES — Guía Rápida
 
-## 📋 Requisitos Previos
+## Requisitos
 
-- Android Studio Hedgehog (2023.1.1) o superior
-- JDK 17+ (Gradle lo auto-provisiona vía foojay)
-- Android SDK 35
-- Conexión a Firebase (google-services.json)
+- Android Studio Hedgehog+ · JDK 21+ · Android SDK 35
+- `google-services.json` en `app/` (está en `.gitignore`)
 
-## 🚀 Primeros Pasos
-
-```bash
-git clone <repo-url>
-cd TemUES
-```
-
-1. Coloca tu archivo `google-services.json` en `app/` (está en `.gitignore`)
-2. Abre el proyecto en Android Studio
-3. Sincroniza Gradle
-4. Ejecuta en un emulador o dispositivo
-
-## 🏗️ Arquitectura
+## Arquitectura
 
 MVVM con Hilt + ViewBinding + Navigation Component.
 
 ```
 com.market.temues/
-├── TemUESApp.kt              # @HiltAndroidApp
-├── MainActivity.kt           # @AndroidEntryPoint
-├── model/                    # Data classes (Product, User, Message, Category)
+├── TemUESApp.kt              @HiltAndroidApp
+├── MainActivity.kt           @AndroidEntryPoint
+├── di/                       Módulos Hilt
+├── model/                    Data classes
 ├── data/
-│   ├── local/                # Room DB, DAOs, Entities
-│   ├── remote/               # Firebase services, Retrofit interfaces
-│   └── repository/           # Repositorios
-├── ui/
-│   ├── auth/                 # Login / Registro
-│   ├── home/                 # HomeFragment + HomeViewModel
-│   ├── search/               # SearchFragment + SearchViewModel
-│   ├── chat/                 # ChatListFragment + ChatViewModel
-│   ├── profile/              # ProfileFragment + ProfileViewModel
-│   └── common/               # Adapters, componentes reutilizables
-├── utils/                    # Extensiones, formateadores, permisos
-└── ml/                       # TensorFlow Lite
+│   ├── local/                Room
+│   ├── remote/               Firebase, Retrofit
+│   └── repository/           AuthRepository
+├── ui/auth/                  Login, registro, forgot pass
+├── ui/home/                  HomeFragment
+├── ui/search/                SearchFragment
+├── ui/chat/                  ChatListFragment
+├── ui/profile/               Perfil + cerrar sesión
+├── ui/common/                Adapters
+├── utils/                    Extensiones
+└── ml/                       TensorFlow Lite
 ```
 
-## ✍️ Convenciones de Código
+## Documentación
 
-### Naming
+| Archivo | Contenido |
+|---|---|
+| [docs/architecture.md](architecture.md) | Arquitectura general y stack |
+| [docs/authentication.md](authentication.md) | Flujo de autenticación completo |
+| [docs/development-guide.md](development-guide.md) | Guía para crear nuevas funcionalidades |
+| [docs/data-layer.md](data-layer.md) | Especificación Local vs Remoto por feature |
+| [docs/libraries.md](libraries.md) | Referencia de todas las librerías |
+
+## Convenciones
 
 | Elemento | Convención | Ejemplo |
 |---|---|---|
-| Clases | PascalCase | `HomeFragment`, `ProductRepository` |
-| Funciones | camelCase | `loadProducts()`, `onViewCreated()` |
-| Variables | camelCase | `binding`, `productList` |
-| Archivos XML | snake_case | `fragment_home.xml`, `item_product.xml` |
-| Recursos ID | snake_case | `@+id/btn_submit`, `@+id/rv_products` |
-| Strings | snake_case | `home_title`, `error_network` |
+| Clases | PascalCase | `ProductRepository` |
+| Funciones | camelCase | `loadProducts()` |
+| Layouts / IDs / Strings | snake_case | `fragment_home.xml`, `btn_login`, `error_network` |
 
-### ViewBinding
-
-Siempre usar ViewBinding. En fragments:
+## ViewBinding (obligatorio)
 
 ```kotlin
-private var _binding: FragmentHomeBinding? = null
+private var _binding: FragmentXxxBinding? = null
 private val binding get() = _binding!!
 
 override fun onCreateView(...): View {
-    _binding = FragmentHomeBinding.inflate(inflater, container, false)
+    _binding = FragmentXxxBinding.inflate(inflater, container, false)
     return binding.root
 }
 
-override fun onDestroyView() {
-    super.onDestroyView()
-    _binding = null
+override fun onDestroyView() { super.onDestroyView(); _binding = null }
+```
+
+## ViewModel + StateFlow
+
+```kotlin
+sealed class UiState { data object Loading; data class Success(...); data class Error(...) }
+
+@HiltViewModel
+class XxxViewModel @Inject constructor(
+    private val repo: XxxRepository
+) : ViewModel() {
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 }
 ```
 
-### Hilt
-
-- Activities/Fragments → `@AndroidEntryPoint`
-- ViewModels → `@HiltViewModel` + `@Inject constructor`
-- Repositorios/DataSources → `@Inject constructor` o `@Module`
+## Observar en Fragment
 
 ```kotlin
-@HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val productRepository: ProductRepository
-) : ViewModel()
+viewModel.uiState.asLiveData().observe(viewLifecycleOwner) { state -> when (state) { ... } }
 ```
 
-### ViewModel + StateFlow
+## Navegación
 
 ```kotlin
-private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+findNavController().navigate(R.id.action_login_to_home) // con Safe Args
 ```
 
-## 🌿 Git Workflow
+## Hilt
 
-```text
-main        → estable, listo para release
-develop     → integración de features
-feature/*   → feature/login, feature/search-screen
-fix/*       → fix/crash-on-empty-state
+```kotlin
+@AndroidEntryPoint class LoginFragment : Fragment()
+@HiltViewModel class AuthViewModel @Inject constructor(...)
+@Singleton class AuthRepository @Inject constructor(...)
 ```
 
-- Commits en español o inglés (consistente)
-- Prefijo: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
-
-## 🧪 Tests
+## Comandos
 
 ```bash
-./gradlew test                    # Unit tests
-./gradlew connectedAndroidTest    # Instrumented tests
-./gradlew lint                    # Static analysis
+.\gradlew.bat assembleDebug           # Build debug
+.\gradlew.bat test                    # Unit tests
+.\gradlew.bat connectedAndroidTest    # Instrumented tests
+.\gradlew.bat lint                    # Static analysis
 ```
 
-## ✅ Checklist Antes de Commit
+## Git
 
-- [ ] Build exitoso (`./gradlew assembleDebug`)
-- [ ] Tests pasan (`./gradlew test`)
+```
+main → develop → feature/*
+feat: / fix: / refactor: / docs: / chore:
+```
+
+## Checklist antes de commit
+
+- [ ] `assembleDebug` exitoso
+- [ ] `test` pasa
 - [ ] Sin strings hardcodeadas (usar `@string/`)
 - [ ] Sin `findViewById` (usar ViewBinding)
-- [ ] Sin lógica de negocio en Fragments/Activities
-- [ ] Sin API keys o secrets hardcodeados
+- [ ] Lógica en ViewModel, no en Fragment/Activity
+- [ ] Sin API keys ni secrets hardcodeados
+
