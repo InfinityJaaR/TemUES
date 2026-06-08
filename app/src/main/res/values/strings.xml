@@ -43,6 +43,7 @@
     <!-- Profile -->
     <string name="profile_logout">Cerrar sesión</string>
 
+
     <!-- Facebook -->
     <string name="facebook_app_id">000000000000000</string>
     <string name="fb_login_protocol_scheme">fb000000000000000</string>
