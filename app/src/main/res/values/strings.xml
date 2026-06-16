@@ -51,4 +51,13 @@
 
     <!-- Google Sign-In (reemplazar con el ID real de Firebase) -->
     <string name="default_web_client_id" translatable="false">885653148382-1ckqkhdb4t5djlsemc5gm93q1n60ormo.apps.googleusercontent.com</string>
+
+    <!-- Commerce Flow Mock Screens -->
+    <string name="product_detail_title">Detalle del producto</string>
+    <string name="cart_title">Carrito de compra</string>
+    <string name="payment_method_title">Forma de pago</string>
+    <string name="card_payment_title">Datos de tarjeta</string>
+    <string name="confirm_purchase_title">Confirmar compra</string>
+    <string name="purchase_success_title">Compra finalizada</string>
+    <string name="seller_sale_title">Venta realizada</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.market.temues.ui.home
+package com.market.temues.ui.payment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.market.temues.R
-import com.market.temues.databinding.FragmentHomeBinding
+import com.market.temues.databinding.FragmentCardPaymentBinding
 
-class HomeFragment : Fragment() {
-    private var _binding: FragmentHomeBinding? = null
+class CardPaymentFragment : Fragment() {
+    private var _binding: FragmentCardPaymentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,14 +18,14 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentCardPaymentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.cardFeaturedProduct.setOnClickListener {
-            findNavController().navigate(R.id.action_home_to_productDetail)
+        binding.btnReviewPurchase.setOnClickListener {
+            findNavController().navigate(R.id.action_cardPayment_to_confirmPurchase)
         }
     }
 

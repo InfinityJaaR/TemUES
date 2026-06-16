@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/temues_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirmar compra"
+            android:textColor="@color/temues_navy"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <TextView style="@style/TemUESInfoLine" android:text="Producto: Audífonos Bluetooth Pro" />
+            <TextView style="@style/TemUESInfoLine" android:text="Vendedor: Carlos López" />
+            <TextView style="@style/TemUESInfoLine" android:text="Método de pago: Tarjeta terminada en 2458" />
+            <TextView style="@style/TemUESInfoLine" android:text="Entrega: coordinar por chat dentro del campus" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <TextView style="@style/TemUESInfoLine" android:text="Subtotal: $18.99" />
+            <TextView style="@style/TemUESInfoLine" android:text="Comisión TemUES: $0.50" />
+            <TextView
+                style="@style/TemUESInfoLine"
+                android:text="Total a pagar: $19.49"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_soft_card"
+            android:padding="14dp"
+            android:text="Al confirmar se generará un código único. Muéstralo al vendedor solo cuando recibas el producto."
+            android:textColor="@color/temues_text"
+            android:textSize="15sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_purchase"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="18dp"
+            android:text="Confirmar y comprar" />
+    </LinearLayout>
+</ScrollView>

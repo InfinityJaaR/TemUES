@@ -1,11 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@color/temues_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/home_title"
-        android:textSize="20sp" />
-</FrameLayout>
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@drawable/bg_temues_gradient"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TemUES Market"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Ofertas, emprendimientos y productos de estudiantes cerca de ti"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Buscar audífonos, comida, ropa..."
+            app:startIconDrawable="@drawable/ic_search">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView style="@style/TemUESChip" android:text="Todo" />
+                <TextView style="@style/TemUESChip" android:text="Electrónica" />
+                <TextView style="@style/TemUESChip" android:text="Ropa" />
+                <TextView style="@style/TemUESChip" android:text="Comida" />
+                <TextView style="@style/TemUESChip" android:text="Servicios" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Productos destacados"
+            android:textColor="@color/temues_navy"
+            android:textSize="21sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:columnCount="2"
+            android:useDefaultMargins="true">
+
+            <LinearLayout
+                android:id="@+id/card_featured_product"
+                style="@style/TemUESProductCard">
+                <View style="@style/TemUESProductImage" />
+                <TextView style="@style/TemUESProductName" android:text="Audífonos Bluetooth Pro" />
+                <TextView style="@style/TemUESProductMeta" android:text="San Salvador · usado" />
+                <TextView style="@style/TemUESProductPrice" android:text="$18.99" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <View style="@style/TemUESProductImage" />
+                <TextView style="@style/TemUESProductName" android:text="Hoodie universitario" />
+                <TextView style="@style/TemUESProductMeta" android:text="Campus central · nuevo" />
+                <TextView style="@style/TemUESProductPrice" android:text="$24.00" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <View style="@style/TemUESProductImage" />
+                <TextView style="@style/TemUESProductName" android:text="Combo almuerzo ejecutivo" />
+                <TextView style="@style/TemUESProductMeta" android:text="Entrega hoy · comida" />
+                <TextView style="@style/TemUESProductPrice" android:text="$3.50" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <View style="@style/TemUESProductImage" />
+                <TextView style="@style/TemUESProductName" android:text="Calculadora científica" />
+                <TextView style="@style/TemUESProductMeta" android:text="Ingeniería · usado" />
+                <TextView style="@style/TemUESProductPrice" android:text="$12.00" />
+            </LinearLayout>
+        </GridLayout>
+    </LinearLayout>
+</ScrollView>

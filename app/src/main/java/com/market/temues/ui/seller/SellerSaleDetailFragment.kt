@@ -1,4 +1,4 @@
-package com.market.temues.ui.home
+package com.market.temues.ui.seller
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,11 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
-import com.market.temues.databinding.FragmentHomeBinding
+import com.market.temues.databinding.FragmentSellerSaleDetailBinding
 
-class HomeFragment : Fragment() {
-    private var _binding: FragmentHomeBinding? = null
+class SellerSaleDetailFragment : Fragment() {
+    private var _binding: FragmentSellerSaleDetailBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,14 +19,17 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentSellerSaleDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.cardFeaturedProduct.setOnClickListener {
-            findNavController().navigate(R.id.action_home_to_productDetail)
+        binding.btnValidateDelivery.setOnClickListener {
+            Snackbar.make(binding.root, "Entrega validada y pago listo para liberar", Snackbar.LENGTH_LONG).show()
+        }
+        binding.btnContactBuyer.setOnClickListener {
+            findNavController().navigate(R.id.chatFragment)
         }
     }
 
