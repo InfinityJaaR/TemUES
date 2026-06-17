@@ -1,6 +1,7 @@
 package com.market.temues.ui.product
 
 import android.os.Bundle
+import android.widget.Toast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,8 @@ import javax.inject.Inject
 class ProductDetailFragment : Fragment() {
     private var _binding: PantallaDetalleProductoBinding? = null
     private val binding get() = _binding!!
+
+    private var esFavoritoSeleccionado = false
 
     @Inject lateinit var productRemoteDataSource: ProductRemoteDataSource
     @Inject lateinit var storageDataSource: StorageDataSource
@@ -57,23 +60,34 @@ class ProductDetailFragment : Fragment() {
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnFavorite.setOnClickListener {
-            findNavController().navigate(R.id.action_productDetail_to_favorites)
+            alternarFavoritoVisual()
         }
         binding.btnMessageSeller.setOnClickListener {
             findNavController().navigate(R.id.chatDetailFragment)
         }
     }
 
+    private fun alternarFavoritoVisual() {
+        esFavoritoSeleccionado = !esFavoritoSeleccionado
+        val colorFavorito = requireContext().getColor(
+            if (esFavoritoSeleccionado) R.color.temues_red else R.color.temues_text_muted
+        )
+        binding.btnFavorite.iconTint = android.content.res.ColorStateList.valueOf(colorFavorito)
+        val mensaje = if (esFavoritoSeleccionado) "Agregado a Favoritos" else "Eliminado de Favoritos"
+        Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
+    }
+
     private fun renderProduct(product: Product) {
-        binding.txtConditionChip.text = product.condition.replaceFirstChar { it.uppercase() }
-        binding.txtLocationChip.text = product.location
+        val lugarEntrega = product.location.ifBlank { "Coordinar por chat" }
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)
         binding.txtProductDescription.text = product.description
-        binding.txtSeller.text = "Vendedor: ${product.sellerName}"
-        binding.txtLocation.text = "Ubicación: ${product.location}"
+        binding.txtSeller.text = product.sellerName.ifBlank { "Vendedor sin nombre" }
+        binding.txtLocation.text = "Lugar: $lugarEntrega"
         binding.txtCondition.text = "Condición: ${product.condition.replaceFirstChar { it.uppercase() }}"
+        binding.txtDeliveryPoint.text = "Punto de entrega: $lugarEntrega"
         binding.txtCategory.text = "Categoría: ${product.categoryName}"
+        binding.imgSellerPhoto.setImageResource(R.drawable.bg_temues_gradient)
         loadProductImage(product.images.firstOrNull())
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/temues_bg">
@@ -26,11 +27,39 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:background="@drawable/bg_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
 
-                <TextView android:id="@+id/txt_condition_chip" style="@style/TemUESChip" android:text="Usado" />
-                <TextView android:id="@+id/txt_location_chip" style="@style/TemUESChip" android:text="San Salvador" />
-                <TextView style="@style/TemUESChip" android:text="Coordinar por chat" />
+                <TextView
+                    android:id="@+id/txt_delivery_point"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Punto de entrega: Coordinar por chat"
+                    android:textColor="@color/temues_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_favorite"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:contentDescription="Agregar a favoritos"
+                    app:icon="@drawable/ic_favorite"
+                    app:iconTint="@color/temues_text_muted" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_cart"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="4dp"
+                    android:contentDescription="Agregar al carrito"
+                    app:icon="@drawable/ic_cart"
+                    app:iconTint="@color/temues_navy" />
             </LinearLayout>
 
             <TextView
@@ -59,6 +88,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:background="@drawable/bg_soft_card"
+                android:lineSpacingExtra="4dp"
+                android:padding="14dp"
                 android:text="Producto publicado por estudiante verificado. Batería en buen estado, incluye estuche y cable. El punto de entrega se acuerda por chat para mayor seguridad."
                 android:textColor="@color/temues_text"
                 android:textSize="15sp" />
@@ -70,11 +102,70 @@
                 android:background="@drawable/bg_card"
                 android:orientation="vertical">
 
-                <TextView android:id="@+id/txt_seller" style="@style/TemUESInfoLine" android:text="Vendedor: Carlos López" />
-                <TextView android:id="@+id/txt_location" style="@style/TemUESInfoLine" android:text="Ubicación: San Salvador" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Información del producto"
+                    android:textColor="@color/temues_navy"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
                 <TextView android:id="@+id/txt_condition" style="@style/TemUESInfoLine" android:text="Condición: Usado" />
-                <TextView style="@style/TemUESInfoLine" android:text="Punto de entrega: Coordinar por chat" />
                 <TextView android:id="@+id/txt_category" style="@style/TemUESInfoLine" android:text="Categoría: Electrónica" />
+                <TextView android:id="@+id/txt_location" style="@style/TemUESInfoLine" android:text="Lugar: San Salvador" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <ImageView
+                    android:id="@+id/img_seller_photo"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_temues_gradient"
+                    android:contentDescription="Foto del vendedor"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Vendedor"
+                        android:textColor="@color/temues_text_muted"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/txt_seller"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Carlos López"
+                        android:textColor="@color/temues_navy"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_message_seller"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:contentDescription="Enviar mensaje"
+                    app:icon="@drawable/ic_send_message"
+                    app:iconTint="@color/temues_navy" />
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -84,37 +175,6 @@
                 android:layout_marginTop="18dp"
                 android:text="Comprar ahora" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_add_cart"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="8dp"
-                android:text="Agregar al carrito" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_favorite"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Favorito" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_message_seller"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="Escribir" />
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

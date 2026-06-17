@@ -45,6 +45,7 @@
             app:startIconDrawable="@drawable/ic_search">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_product_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text" />
@@ -61,11 +62,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView style="@style/TemUESChip" android:text="Todo" />
-                <TextView style="@style/TemUESChip" android:text="Electrónica" />
-                <TextView style="@style/TemUESChip" android:text="Ropa" />
-                <TextView style="@style/TemUESChip" android:text="Comida" />
-                <TextView style="@style/TemUESChip" android:text="Servicios" />
+                <TextView android:id="@+id/chip_all" style="@style/TemUESChip" android:text="Todo" />
+                <TextView android:id="@+id/chip_electronics" style="@style/TemUESChip" android:text="Electrónica" />
+                <TextView android:id="@+id/chip_clothes" style="@style/TemUESChip" android:text="Ropa" />
+                <TextView android:id="@+id/chip_home" style="@style/TemUESChip" android:text="Hogar" />
+                <TextView android:id="@+id/chip_services" style="@style/TemUESChip" android:text="Servicios" />
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -85,6 +86,17 @@
             android:layout_marginTop="10dp"
             android:columnCount="2"
             android:useDefaultMargins="true" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animacion_carga_inicio"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/animacion_carga" />
 
         <LinearLayout
             android:layout_width="match_parent"
