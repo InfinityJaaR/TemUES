@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="170dp"
             android:background="@drawable/bg_temues_gradient"
             android:gravity="center_vertical"
             android:orientation="vertical"
@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TemUES Market"
+                android:text="Compra y vende en la UES"
                 android:textColor="@color/white"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Ofertas, emprendimientos y productos de estudiantes cerca de ti"
+                android:text="Productos rankeados por relevancia, ubicación de entrega y actividad reciente del campus."
                 android:textColor="@color/white"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -73,47 +73,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Productos destacados"
+            android:text="Recomendados para ti"
             android:textColor="@color/temues_navy"
             android:textSize="21sp"
             android:textStyle="bold" />
 
         <GridLayout
+            android:id="@+id/grid_products"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:columnCount="2"
-            android:useDefaultMargins="true">
+            android:useDefaultMargins="true" />
 
-            <LinearLayout
-                android:id="@+id/card_featured_product"
-                style="@style/TemUESProductCard">
-                <View style="@style/TemUESProductImage" />
-                <TextView style="@style/TemUESProductName" android:text="Audífonos Bluetooth Pro" />
-                <TextView style="@style/TemUESProductMeta" android:text="San Salvador · usado" />
-                <TextView style="@style/TemUESProductPrice" android:text="$18.99" />
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_code_box"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <LinearLayout style="@style/TemUESProductCard">
-                <View style="@style/TemUESProductImage" />
-                <TextView style="@style/TemUESProductName" android:text="Hoodie universitario" />
-                <TextView style="@style/TemUESProductMeta" android:text="Campus central · nuevo" />
-                <TextView style="@style/TemUESProductPrice" android:text="$24.00" />
-            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Estados de carga previstos"
+                android:textColor="@color/temues_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            <LinearLayout style="@style/TemUESProductCard">
-                <View style="@style/TemUESProductImage" />
-                <TextView style="@style/TemUESProductName" android:text="Combo almuerzo ejecutivo" />
-                <TextView style="@style/TemUESProductMeta" android:text="Entrega hoy · comida" />
-                <TextView style="@style/TemUESProductPrice" android:text="$3.50" />
-            </LinearLayout>
-
-            <LinearLayout style="@style/TemUESProductCard">
-                <View style="@style/TemUESProductImage" />
-                <TextView style="@style/TemUESProductName" android:text="Calculadora científica" />
-                <TextView style="@style/TemUESProductMeta" android:text="Ingeniería · usado" />
-                <TextView style="@style/TemUESProductPrice" android:text="$12.00" />
-            </LinearLayout>
-        </GridLayout>
+            <TextView
+                android:id="@+id/txt_products_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Cargando productos..."
+                android:textColor="@color/temues_text"
+                android:textSize="14sp" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

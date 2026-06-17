@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.market.temues.R
-import com.market.temues.databinding.FragmentCardPaymentBinding
+import com.market.temues.databinding.PantallaPagoTarjetaBinding
 
 class CardPaymentFragment : Fragment() {
-    private var _binding: FragmentCardPaymentBinding? = null
+    private var _binding: PantallaPagoTarjetaBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class CardPaymentFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCardPaymentBinding.inflate(inflater, container, false)
+        _binding = PantallaPagoTarjetaBinding.inflate(inflater, container, false)
         return binding.root
     }
 

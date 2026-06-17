@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/temues_orange</item>
         <item name="colorPrimaryDark">@color/temues_orange_dark</item>
         <item name="colorSecondary">@color/temues_yellow</item>
-        <item name="android:fontFamily">sans</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 

@@ -10,7 +10,7 @@
         android:id="@+id/loginFragment"
         android:name="com.market.temues.ui.auth.LoginFragment"
         android:label="@string/login_title"
-        tools:layout="@layout/fragment_login">
+        tools:layout="@layout/pantalla_inicio_sesion">
 
         <action
             android:id="@+id/action_login_to_home"
@@ -31,7 +31,7 @@
         android:id="@+id/registerFragment"
         android:name="com.market.temues.ui.auth.RegisterFragment"
         android:label="@string/register_title"
-        tools:layout="@layout/fragment_register">
+        tools:layout="@layout/pantalla_registro">
 
         <action
             android:id="@+id/action_register_to_home"
@@ -50,14 +50,14 @@
         android:id="@+id/forgotPasswordFragment"
         android:name="com.market.temues.ui.auth.ForgotPasswordFragment"
         android:label="@string/forgot_title"
-        tools:layout="@layout/fragment_forgot_password" />
+        tools:layout="@layout/pantalla_recuperar_contrasena" />
 
     <!-- Main Screens -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.market.temues.ui.home.HomeFragment"
         android:label="@string/nav_home"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/pantalla_inicio">
 
         <action
             android:id="@+id/action_home_to_productDetail"
@@ -68,24 +68,46 @@
         android:id="@+id/searchFragment"
         android:name="com.market.temues.ui.search.SearchFragment"
         android:label="@string/nav_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/pantalla_busqueda">
+
+        <action
+            android:id="@+id/action_search_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.market.temues.ui.favorites.FavoritesFragment"
+        android:label="@string/favorites_title"
+        tools:layout="@layout/pantalla_favoritos">
+
+        <action
+            android:id="@+id/action_favorites_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.market.temues.ui.chat.ChatListFragment"
         android:label="@string/nav_chat"
-        tools:layout="@layout/fragment_chat_list">
+        tools:layout="@layout/pantalla_lista_chats">
 
         <action
-            android:id="@+id/action_chat_to_sellerSaleDetail"
-            app:destination="@id/sellerSaleDetailFragment" />
+            android:id="@+id/action_chat_to_chatDetail"
+            app:destination="@id/chatDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/chatDetailFragment"
+        android:name="com.market.temues.ui.chat.ChatDetailFragment"
+        android:label="@string/chat_detail_title"
+        tools:layout="@layout/pantalla_detalle_chat" />
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.market.temues.ui.profile.ProfileFragment"
         android:label="@string/nav_profile"
-        tools:layout="@layout/fragment_profile">
+        tools:layout="@layout/pantalla_perfil">
 
         <action
             android:id="@+id/action_profile_to_login"
@@ -98,18 +120,22 @@
         android:id="@+id/productDetailFragment"
         android:name="com.market.temues.ui.product.ProductDetailFragment"
         android:label="@string/product_detail_title"
-        tools:layout="@layout/fragment_product_detail">
+        tools:layout="@layout/pantalla_detalle_producto">
 
         <action
             android:id="@+id/action_productDetail_to_cart"
             app:destination="@id/cartFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_favorites"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.market.temues.ui.cart.CartFragment"
         android:label="@string/cart_title"
-        tools:layout="@layout/fragment_cart">
+        tools:layout="@layout/pantalla_carrito">
 
         <action
             android:id="@+id/action_cart_to_paymentMethod"
@@ -120,7 +146,7 @@
         android:id="@+id/paymentMethodFragment"
         android:name="com.market.temues.ui.payment.PaymentMethodFragment"
         android:label="@string/payment_method_title"
-        tools:layout="@layout/fragment_payment_method">
+        tools:layout="@layout/pantalla_metodo_pago">
 
         <action
             android:id="@+id/action_paymentMethod_to_cardPayment"
@@ -131,7 +157,7 @@
         android:id="@+id/cardPaymentFragment"
         android:name="com.market.temues.ui.payment.CardPaymentFragment"
         android:label="@string/card_payment_title"
-        tools:layout="@layout/fragment_card_payment">
+        tools:layout="@layout/pantalla_pago_tarjeta">
 
         <action
             android:id="@+id/action_cardPayment_to_confirmPurchase"
@@ -142,7 +168,7 @@
         android:id="@+id/confirmPurchaseFragment"
         android:name="com.market.temues.ui.payment.ConfirmPurchaseFragment"
         android:label="@string/confirm_purchase_title"
-        tools:layout="@layout/fragment_confirm_purchase">
+        tools:layout="@layout/pantalla_confirmar_compra">
 
         <action
             android:id="@+id/action_confirmPurchase_to_purchaseSuccess"
@@ -153,12 +179,12 @@
         android:id="@+id/purchaseSuccessFragment"
         android:name="com.market.temues.ui.payment.PurchaseSuccessFragment"
         android:label="@string/purchase_success_title"
-        tools:layout="@layout/fragment_purchase_success" />
+        tools:layout="@layout/pantalla_compra_exitosa" />
 
     <fragment
         android:id="@+id/sellerSaleDetailFragment"
         android:name="com.market.temues.ui.seller.SellerSaleDetailFragment"
         android:label="@string/seller_sale_title"
-        tools:layout="@layout/fragment_seller_sale_detail" />
+        tools:layout="@layout/pantalla_detalle_venta_vendedor" />
 
 </navigation>

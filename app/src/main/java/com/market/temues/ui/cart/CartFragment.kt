@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.market.temues.R
-import com.market.temues.databinding.FragmentCartBinding
+import com.market.temues.databinding.PantallaCarritoBinding
 
 class CartFragment : Fragment() {
-    private var _binding: FragmentCartBinding? = null
+    private var _binding: PantallaCarritoBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class CartFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCartBinding.inflate(inflater, container, false)
+        _binding = PantallaCarritoBinding.inflate(inflater, container, false)
         return binding.root
     }
 

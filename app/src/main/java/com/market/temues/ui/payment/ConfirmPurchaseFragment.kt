@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.market.temues.R
-import com.market.temues.databinding.FragmentConfirmPurchaseBinding
+import com.market.temues.databinding.PantallaConfirmarCompraBinding
 
 class ConfirmPurchaseFragment : Fragment() {
-    private var _binding: FragmentConfirmPurchaseBinding? = null
+    private var _binding: PantallaConfirmarCompraBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class ConfirmPurchaseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentConfirmPurchaseBinding.inflate(inflater, container, false)
+        _binding = PantallaConfirmarCompraBinding.inflate(inflater, container, false)
         return binding.root
     }
 

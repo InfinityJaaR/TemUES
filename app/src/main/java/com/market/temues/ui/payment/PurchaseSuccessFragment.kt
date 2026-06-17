@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.market.temues.R
-import com.market.temues.databinding.FragmentPurchaseSuccessBinding
+import com.market.temues.databinding.PantallaCompraExitosaBinding
 
 class PurchaseSuccessFragment : Fragment() {
-    private var _binding: FragmentPurchaseSuccessBinding? = null
+    private var _binding: PantallaCompraExitosaBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class PurchaseSuccessFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPurchaseSuccessBinding.inflate(inflater, container, false)
+        _binding = PantallaCompraExitosaBinding.inflate(inflater, container, false)
         return binding.root
     }
 

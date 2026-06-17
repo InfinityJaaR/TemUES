@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
-import com.market.temues.databinding.FragmentSellerSaleDetailBinding
+import com.market.temues.databinding.PantallaDetalleVentaVendedorBinding
 
 class SellerSaleDetailFragment : Fragment() {
-    private var _binding: FragmentSellerSaleDetailBinding? = null
+    private var _binding: PantallaDetalleVentaVendedorBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -19,7 +19,7 @@ class SellerSaleDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSellerSaleDetailBinding.inflate(inflater, container, false)
+        _binding = PantallaDetalleVentaVendedorBinding.inflate(inflater, container, false)
         return binding.root
     }
 
