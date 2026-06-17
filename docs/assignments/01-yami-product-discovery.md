@@ -56,9 +56,9 @@ Implementar el flujo principal de navegación de productos: explorar el listado 
   - Imagen principal grande (ImageView + Glide)
   - Nombre (TextView, título grande)
   - Precio (TextView, destacado)
-  - Condición + Ubicación (chip/chips)
+  - Condición (chip)
+  - Lugar de entrega (TextView, texto plano)
   - Descripción (TextView)
-  - **Punto de entrega**: TextView con `product.location` si no es `"coordinar por chat"`, en ese caso mostrar "Coordinar por chat" con ícono de mensaje
   - Botones: ❤️ Favorito, 💬 Chat con vendedor, 🛒 Agregar al carrito, 💳 Comprar ahora
 - Navegación desde botones:
   - Chat: navegar a `chatDetailFragment` con `sellerId` y `productId`
@@ -121,7 +121,7 @@ Agregar acciones:
 - [ ] Home carga productos rankeados por relevancia según búsquedas del usuario
 - [ ] Los productos se muestran en cards con imagen, nombre, precio, ubicación
 - [ ] Al hacer clic en un producto se abre el detalle con toda la información
-- [ ] Si `location == "coordinar por chat"` se muestra ese texto, si no el nombre de la ubicación
+- [ ] El lugar de entrega se muestra como texto plano en el detalle
 - [ ] Búsqueda funciona con debounce y filtro por categoría
 - [ ] Las búsquedas del usuario se guardan en Firestore para alimentar el recomendador
 - [ ] Los estados loading/empty/error se muestran correctamente

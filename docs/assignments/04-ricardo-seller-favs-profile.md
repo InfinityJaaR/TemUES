@@ -79,7 +79,7 @@ Permitir que los vendedores gestionen sus productos (CRUD completo), que los usu
   - **Categoría**: Spinner o RecyclerView con categorías del ViewModel
   - **Ubicación**: EditText (nombre del punto de entrega: "Mi casa", "Trabajo", "Coordinar por chat")
   - **Tags**: ChipGroup con EditText para agregar tags personalizados
-  - **Imágenes**: Grid de imágenes (2 columnas), cada una con botón de eliminar, más un botón "Agregar foto" que abre selector de galería o cámara
+  - **Imágenes**: Grid de imágenes (2 columnas), cada una con botón de eliminar, más un botón "Agregar foto" que al presionarlo muestra un diálogo con dos opciones: "Subir imagen" (abre el selector de galería) y "Tomar foto" (abre la cámara con CameraX)
 - Botón "Guardar" al final
 - Validación visual: campos obligatorios con error si están vacíos al guardar
 - Al guardar exitosamente: navegar hacia atrás (popBackStack)
