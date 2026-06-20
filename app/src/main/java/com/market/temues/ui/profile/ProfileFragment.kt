@@ -11,14 +11,14 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.market.temues.R
-import com.market.temues.databinding.FragmentProfileBinding
+import com.market.temues.databinding.PantallaPerfilBinding
 import com.market.temues.ui.auth.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
-    private var _binding: FragmentProfileBinding? = null
+    private var _binding: PantallaPerfilBinding? = null
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by viewModels()
@@ -28,7 +28,7 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        _binding = PantallaPerfilBinding.inflate(inflater, container, false)
         return binding.root
     }
 

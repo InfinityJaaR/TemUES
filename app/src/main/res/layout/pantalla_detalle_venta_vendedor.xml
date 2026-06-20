@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/temues_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nueva venta realizada"
+            android:textColor="@color/temues_navy"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Debes coordinar la entrega con el comprador. Para completar el pago, ingresa el código que tiene el comprador."
+            android:textColor="@color/temues_text_muted"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <TextView style="@style/TemUESInfoLine" android:text="Producto vendido: Audífonos Bluetooth Pro" />
+            <TextView style="@style/TemUESInfoLine" android:text="Comprador: Andrea Martínez" />
+            <TextView style="@style/TemUESInfoLine" android:text="Total: $19.49" />
+            <TextView style="@style/TemUESInfoLine" android:text="Estado: pendiente de entrega" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:hint="Código del comprador">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_buyer_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapCharacters" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_validate_delivery"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="18dp"
+            android:text="Validar entrega y liberar pago" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_contact_buyer"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="8dp"
+            android:text="Escribir al comprador" />
+    </LinearLayout>
+</ScrollView>

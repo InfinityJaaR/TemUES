@@ -11,13 +11,13 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
-import com.market.temues.databinding.FragmentForgotPasswordBinding
+import com.market.temues.databinding.PantallaRecuperarContrasenaBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ForgotPasswordFragment : Fragment() {
 
-    private var _binding: FragmentForgotPasswordBinding? = null
+    private var _binding: PantallaRecuperarContrasenaBinding? = null
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by viewModels()
@@ -25,7 +25,7 @@ class ForgotPasswordFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
+        _binding = PantallaRecuperarContrasenaBinding.inflate(inflater, container, false)
         return binding.root
     }
 
