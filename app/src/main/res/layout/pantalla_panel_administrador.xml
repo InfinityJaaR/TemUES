@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/temues_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Panel administrador"
+            android:textColor="@color/temues_navy"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:columnCount="2"
+            android:useDefaultMargins="true">
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <TextView style="@style/TemUESProductPrice" android:text="128" />
+                <TextView style="@style/TemUESProductMeta" android:text="Productos activos" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <TextView style="@style/TemUESProductPrice" android:text="42" />
+                <TextView style="@style/TemUESProductMeta" android:text="Órdenes creadas" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <TextView style="@style/TemUESProductPrice" android:text="8" />
+                <TextView style="@style/TemUESProductMeta" android:text="Categorías" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/TemUESProductCard">
+                <TextView style="@style/TemUESProductPrice" android:text="ML" />
+                <TextView style="@style/TemUESProductMeta" android:text="Tendencias TFLite" />
+            </LinearLayout>
+        </GridLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_code_box"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tendencia detectada"
+                android:textColor="@color/temues_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Electrónica y comida muestran más búsquedas recientes."
+                android:textColor="@color/temues_text"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
