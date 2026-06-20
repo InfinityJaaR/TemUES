@@ -1,5 +1,36 @@
 # Librerías del Proyecto
 
+## UI / Diseño de Pantallas
+
+| Artefacto | Propósito |
+|---|---|
+| `com.google.android.material:material` | Componentes Material Design 3: CardView, ChipGroup, MaterialCardView, BottomNavigationView, FAB, TextInputLayout, BottomSheet, Snackbar, etc. |
+| `com.airbnb.android:lottie` | Animaciones vectoriales JSON (loading, empty states, transiciones) |
+| `androidx.navigation:navigation-fragment-ktx` + `navigation-ui-ktx` | Navegación entre pantallas con Safe Args |
+
+### Uso típico
+
+```kotlin
+// Material Card
+<com.google.android.material.card.MaterialCardView ... />
+
+// Chip
+<com.google.android.material.chip.Chip ... />
+
+// Lottie loading
+<com.airbnb.lottie.LottieAnimationView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:lottie_rawRes="@raw/loading"
+    app:lottie_autoPlay="true"
+    app:lottie_loop="true" />
+
+// Navigation
+findNavController().navigate(R.id.action_home_to_detail)
+```
+
+---
+
 ## Firebase (BOM 32.7.2)
 
 Todas las versiones se gestionan mediante el **Firebase BoM** — no se especifican versiones individuales.
