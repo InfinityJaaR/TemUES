@@ -5,17 +5,19 @@ import android.widget.Toast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.market.temues.R
-import com.market.temues.data.remote.product.ProductRemoteDataSource
 import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.databinding.PantallaDetalleProductoBinding
 import com.market.temues.model.Product
+import com.market.temues.ui.common.ProductDetailUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,10 +26,10 @@ import javax.inject.Inject
 class ProductDetailFragment : Fragment() {
     private var _binding: PantallaDetalleProductoBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: ProductDetailViewModel by viewModels()
 
     private var esFavoritoSeleccionado = false
 
-    @Inject lateinit var productRemoteDataSource: ProductRemoteDataSource
     @Inject lateinit var storageDataSource: StorageDataSource
 
     override fun onCreateView(
@@ -41,18 +43,7 @@ class ProductDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val productId = arguments?.getString("productId").orEmpty()
-        if (productId.isNotBlank()) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    productRemoteDataSource.getById(productId).collect { product ->
-                        product?.let { renderProduct(it) }
-                    }
-                }
-            }
-        }
-
+        observarProducto()
         binding.btnBuyNow.setOnClickListener {
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
@@ -65,6 +56,30 @@ class ProductDetailFragment : Fragment() {
         binding.btnMessageSeller.setOnClickListener {
             findNavController().navigate(R.id.chatDetailFragment)
         }
+    }
+
+    private fun observarProducto() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                        ProductDetailUiState.Loading -> mostrarEstadoDetalle("Cargando producto...")
+                        is ProductDetailUiState.Success -> {
+                            binding.txtProductDescription.isVisible = true
+                            renderProduct(state.product)
+                        }
+                        is ProductDetailUiState.Empty -> mostrarEstadoDetalle(state.message)
+                        is ProductDetailUiState.Error -> mostrarEstadoDetalle(state.message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun mostrarEstadoDetalle(mensaje: String) {
+        binding.txtProductName.text = mensaje
+        binding.txtProductPrice.text = ""
+        binding.txtProductDescription.isVisible = false
     }
 
     private fun alternarFavoritoVisual() {

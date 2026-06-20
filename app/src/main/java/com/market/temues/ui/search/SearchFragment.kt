@@ -11,19 +11,18 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.market.temues.R
-import com.market.temues.data.remote.product.ProductRemoteDataSource
 import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.databinding.PantallaBusquedaBinding
 import com.market.temues.model.Product
+import com.market.temues.ui.common.ProductListUiState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,13 +30,9 @@ import javax.inject.Inject
 class SearchFragment : Fragment() {
     private var _binding: PantallaBusquedaBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: SearchViewModel by viewModels()
 
-    @Inject lateinit var productRemoteDataSource: ProductRemoteDataSource
     @Inject lateinit var storageDataSource: StorageDataSource
-
-    private var productosFirestore: List<Product> = emptyList()
-    private var categoriaSeleccionada: String = ""
-    private var trabajoCarga: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,13 +46,14 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configurarBusquedaYCategorias()
-        binding.actualizarBusqueda.setOnRefreshListener { cargarProductos() }
-        cargarProductos()
+        observarEstado()
+        binding.actualizarBusqueda.setOnRefreshListener { viewModel.cargarProductos() }
+        viewModel.cargarProductos()
     }
 
     private fun configurarBusquedaYCategorias() {
         marcarCategoriaSeleccionada(binding.chipBusquedaTodo)
-        binding.inputBusquedaProducto.doAfterTextChanged { aplicarFiltros() }
+        binding.inputBusquedaProducto.doAfterTextChanged { viewModel.buscar(it?.toString().orEmpty()) }
         binding.chipBusquedaTodo.setOnClickListener { seleccionarCategoria("", binding.chipBusquedaTodo) }
         binding.chipBusquedaElectronica.setOnClickListener { seleccionarCategoria("electronica", binding.chipBusquedaElectronica) }
         binding.chipBusquedaRopa.setOnClickListener { seleccionarCategoria("ropa", binding.chipBusquedaRopa) }
@@ -65,24 +61,29 @@ class SearchFragment : Fragment() {
         binding.chipBusquedaServicios.setOnClickListener { seleccionarCategoria("servicios", binding.chipBusquedaServicios) }
     }
 
-    private fun cargarProductos() {
-        trabajoCarga?.cancel()
-        trabajoCarga = viewLifecycleOwner.lifecycleScope.launch {
-            mostrarCargando()
+    private fun observarEstado() {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                productRemoteDataSource.getAll()
-                    .catch { error -> mostrarError(error.message ?: "No se pudieron cargar los productos.") }
-                    .collect { productos ->
-                        productosFirestore = productos
-                        ocultarCargando()
-                        aplicarFiltros()
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                        ProductListUiState.Loading -> mostrarCargando()
+                        is ProductListUiState.Success -> {
+                            ocultarCargando()
+                            renderProductos(state.products)
+                        }
+                        is ProductListUiState.Empty -> {
+                            ocultarCargando()
+                            renderProductos(emptyList(), state.message)
+                        }
+                        is ProductListUiState.Error -> mostrarError(state.message)
                     }
+                }
             }
         }
     }
 
     private fun mostrarCargando() {
-        binding.animacionCargaBusqueda.isVisible = productosFirestore.isEmpty()
+        binding.animacionCargaBusqueda.isVisible = true
         binding.actualizarBusqueda.isRefreshing = true
         binding.txtEstadoBusqueda.text = "Cargando productos desde Firestore..."
     }
@@ -99,9 +100,8 @@ class SearchFragment : Fragment() {
     }
 
     private fun seleccionarCategoria(categoriaId: String, chipSeleccionado: TextView) {
-        categoriaSeleccionada = categoriaId
         marcarCategoriaSeleccionada(chipSeleccionado)
-        aplicarFiltros()
+        viewModel.seleccionarCategoria(categoriaId)
     }
 
     private fun marcarCategoriaSeleccionada(chipSeleccionado: TextView) {
@@ -119,35 +119,10 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun aplicarFiltros() {
-        val textoBusqueda = binding.inputBusquedaProducto.text?.toString().orEmpty().trim().lowercase()
-        val productosFiltrados = productosFirestore.filter { producto ->
-            val coincideTexto = textoBusqueda.isBlank() || producto.coincideConBusqueda(textoBusqueda)
-            val coincideCategoria = categoriaSeleccionada.isBlank() || producto.categoryId == categoriaSeleccionada
-            coincideTexto && coincideCategoria
-        }
-        renderProductos(productosFiltrados)
-    }
-
-    private fun Product.coincideConBusqueda(textoBusqueda: String): Boolean {
-        val textoProducto = listOf(
-            name,
-            description,
-            price.toString(),
-            categoryId,
-            categoryName,
-            sellerName,
-            condition,
-            location,
-            tags.joinToString(" ")
-        ).joinToString(" ").lowercase()
-        return textoProducto.contains(textoBusqueda)
-    }
-
-    private fun renderProductos(productos: List<Product>) {
+    private fun renderProductos(productos: List<Product>, emptyMessage: String = "No hay productos que coincidan con tu búsqueda o categoría.") {
         binding.gridProductosBusqueda.removeAllViews()
         binding.txtEstadoBusqueda.text = if (productos.isEmpty()) {
-            "No hay productos que coincidan con tu búsqueda o categoría."
+            emptyMessage
         } else {
             "${productos.size} productos encontrados desde Firestore."
         }
