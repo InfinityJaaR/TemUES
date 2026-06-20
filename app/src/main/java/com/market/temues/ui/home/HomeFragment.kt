@@ -132,7 +132,7 @@ class HomeFragment : Fragment() {
             }
             card.layoutParams = GridLayout.LayoutParams().apply {
                 width = 0
-                height = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = (270 * resources.displayMetrics.density).toInt()
                 columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                 setMargins(8, 8, 8, 8)
             }

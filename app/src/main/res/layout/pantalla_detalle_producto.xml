@@ -13,10 +13,12 @@
         <ImageView
             android:id="@+id/img_product_detail"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="@drawable/bg_temues_gradient"
+            android:layout_height="280dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_soft_card"
             android:contentDescription="Imagen del producto"
-            android:scaleType="centerCrop" />
+            android:padding="10dp"
+            android:scaleType="fitCenter" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -160,12 +162,26 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_message_seller"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
                     android:contentDescription="Enviar mensaje"
-                    app:icon="@drawable/ic_send_message"
-                    app:iconTint="@color/temues_navy" />
+                    android:minWidth="0dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="12dp"
+                    android:text="Chat"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/white"
+                    app:cornerRadius="18dp"
+                    app:icon="@drawable/ic_chat"
+                    app:iconGravity="textStart"
+                    app:iconPadding="4dp"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/black"
+                    app:strokeColor="@color/temues_border"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton

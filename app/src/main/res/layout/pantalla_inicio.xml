@@ -89,14 +89,14 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animacion_carga_inicio"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="160dp"
+            android:layout_height="140dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:visibility="gone"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/animacion_carga" />
+            app:lottie_rawRes="@raw/animacion_carga_inicio" />
 
         <LinearLayout
             android:layout_width="match_parent"
