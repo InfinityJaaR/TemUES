@@ -1,4 +1,4 @@
-package com.market.temues.ui.chat
+package com.market.temues.ui.payment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.market.temues.R
-import com.market.temues.databinding.PantallaListaChatsBinding
+import com.market.temues.databinding.PantallaMetodoPagoBinding
 
-class ChatListFragment : Fragment() {
-    private var _binding: PantallaListaChatsBinding? = null
+class PaymentMethodFragment : Fragment() {
+    private var _binding: PantallaMetodoPagoBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,14 +18,14 @@ class ChatListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = PantallaListaChatsBinding.inflate(inflater, container, false)
+        _binding = PantallaMetodoPagoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.cardPendingSale.setOnClickListener {
-            findNavController().navigate(R.id.action_chat_to_chatDetail)
+        binding.btnPayCard.setOnClickListener {
+            findNavController().navigate(R.id.action_paymentMethod_to_cardPayment)
         }
     }
 
