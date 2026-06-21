@@ -44,6 +44,8 @@ class ProductDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observarProducto()
+        observarEstadoFavorito()
+        
         binding.btnBuyNow.setOnClickListener {
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
@@ -51,10 +53,24 @@ class ProductDetailFragment : Fragment() {
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnFavorite.setOnClickListener {
-            alternarFavoritoVisual()
+            viewModel.alternarFavorito()
         }
         binding.btnMessageSeller.setOnClickListener {
             findNavController().navigate(R.id.chatDetailFragment)
+        }
+    }
+
+    private fun observarEstadoFavorito() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.esFavorito.collect { favorito ->
+                    esFavoritoSeleccionado = favorito
+                    val colorFavorito = requireContext().getColor(
+                        if (favorito) R.color.temues_red else R.color.temues_text_muted
+                    )
+                    binding.btnFavorite.iconTint = android.content.res.ColorStateList.valueOf(colorFavorito)
+                }
+            }
         }
     }
 
@@ -80,16 +96,6 @@ class ProductDetailFragment : Fragment() {
         binding.txtProductName.text = mensaje
         binding.txtProductPrice.text = ""
         binding.txtProductDescription.isVisible = false
-    }
-
-    private fun alternarFavoritoVisual() {
-        esFavoritoSeleccionado = !esFavoritoSeleccionado
-        val colorFavorito = requireContext().getColor(
-            if (esFavoritoSeleccionado) R.color.temues_red else R.color.temues_text_muted
-        )
-        binding.btnFavorite.iconTint = android.content.res.ColorStateList.valueOf(colorFavorito)
-        val mensaje = if (esFavoritoSeleccionado) "Agregado a Favoritos" else "Eliminado de Favoritos"
-        Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
     }
 
     private fun renderProduct(product: Product) {
