@@ -125,13 +125,15 @@
                 android:orientation="horizontal"
                 android:padding="14dp">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/img_seller_photo"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:background="@drawable/bg_temues_gradient"
                     android:contentDescription="Foto del vendedor"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TemUES.CircleImage" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -156,6 +158,26 @@
                         android:textColor="@color/temues_navy"
                         android:textSize="17sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_seller_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/temues_text_muted"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/txt_seller_bio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/temues_text_muted"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton

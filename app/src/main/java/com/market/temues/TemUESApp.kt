@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.os.Build
 import com.google.firebase.auth.FirebaseAuth
 import com.market.temues.service.TemUESMessagingService
+import com.stripe.android.PaymentConfiguration
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -13,6 +14,7 @@ class TemUESApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
         crearCanalNotificaciones()
         configurarEscuchaNotificaciones()
     }

@@ -12,7 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,50 +46,39 @@ class AdminDashboardViewModel @Inject constructor(
     val uiState: StateFlow<AdminDashboardUiState> = _uiState.asStateFlow()
 
     init {
-        loadDashboard()
-    }
-
-    fun loadDashboard() {
         viewModelScope.launch {
-            _uiState.value = AdminDashboardUiState.Loading
-            try {
-                val allProducts = productRemoteDataSource.getAll().first()
-                val categories = categoryRemoteDataSource.getAll().first()
-
-                val activeProducts = allProducts.filter { it.status == "activo" }
-                val totalProducts = activeProducts.size
-
-                val byCategory = activeProducts
-                    .groupBy { it.categoryName }
-                    .map { (name, prods) ->
-                        CategoryStat(
-                            categoryName = name,
-                            count = prods.size,
-                            percentage = if (totalProducts > 0) prods.size.toFloat() / totalProducts * 100f else 0f
-                        )
-                    }
-                    .sortedByDescending { it.count }
-
-                val recentProducts = allProducts
-                    .sortedByDescending { it.createdAt }
-                    .take(5)
-
-                val categoryCounts = activeProducts
-                    .groupingBy { it.categoryName }
-                    .eachCount()
-
-                val trends = trendAnalyzer.analyze(categoryCounts)
-
-                _uiState.value = AdminDashboardUiState.Success(
-                    totalProducts = totalProducts,
-                    productsByCategory = byCategory,
-                    recentProducts = recentProducts,
-                    categoryTrends = trends,
-                    categories = categories
-                )
-            } catch (e: Exception) {
-                _uiState.value = AdminDashboardUiState.Error(e.message ?: "Error al cargar dashboard")
-            }
+            productRemoteDataSource.getAll()
+                .combine(categoryRemoteDataSource.getAll()) { products, categories ->
+                    val activeProducts = products.filter { it.status == "activo" }
+                    val totalProducts = activeProducts.size
+                    val byCategory = activeProducts
+                        .groupBy { it.categoryName }
+                        .map { (name, prods) ->
+                            CategoryStat(
+                                categoryName = name,
+                                count = prods.size,
+                                percentage = if (totalProducts > 0) prods.size.toFloat() / totalProducts * 100f else 0f
+                            )
+                        }
+                        .sortedByDescending { it.count }
+                    val recentProducts = products
+                        .sortedByDescending { it.createdAt }
+                        .take(5)
+                    val categoryCounts = activeProducts
+                        .groupingBy { it.categoryName }
+                        .eachCount()
+                    val trends = trendAnalyzer.analyze(categoryCounts)
+                    AdminDashboardUiState.Success(
+                        totalProducts = totalProducts,
+                        productsByCategory = byCategory,
+                        recentProducts = recentProducts,
+                        categoryTrends = trends,
+                        categories = categories
+                    )
+                }
+                .collectLatest { state ->
+                    _uiState.value = state
+                }
         }
     }
 }

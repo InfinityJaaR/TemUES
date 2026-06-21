@@ -125,6 +125,8 @@
     <string name="checkout_metodo_pago">Método de pago</string>
     <string name="checkout_efectivo">Efectivo al recibir</string>
     <string name="checkout_tarjeta">Tarjeta de crédito/débito</string>
+    <string name="checkout_tarjeta_incompleta">Completa los datos de la tarjeta</string>
+    <string name="checkout_tarjeta_declinada">Tu tarjeta fue declinada. Verifica los datos o intenta con otro método de pago.</string>
     <string name="checkout_confirmar">Confirmar pedido</string>
     <string name="checkout_coordinar_chat">Coordinar por chat</string>
     <string name="checkout_pedido_exitoso">¡Pedido realizado!</string>
@@ -155,4 +157,27 @@
     <string name="chat_error_envio_audio">Error al enviar el audio. Intenta de nuevo.</string>
     <string name="chat_sin_telefono">El vendedor no ha registrado un número de teléfono</string>
     <string name="chat_subiendo_audio">Enviando audio…</string>
+
+    <!-- Productos -->
+    <string name="product_price_format">$%1$.2f</string>
+    <string name="product_card_meta">%1$s · %2$s</string>
+    <string name="product_image_description">Imagen del producto</string>
+    <string name="product_name_placeholder">Nombre del producto</string>
+    <string name="product_meta_placeholder">Ubicación · condición</string>
+    <string name="product_price_placeholder">$0.00</string>
+    <string name="products_loading_firestore">Cargando productos desde Firestore...</string>
+    <string name="products_empty_filtered">No hay productos que coincidan con tu búsqueda o categoría.</string>
+    <string name="products_loaded_count">%1$d productos cargados desde Firestore.</string>
+    <string name="products_found_count">%1$d productos encontrados.</string>
+    <string name="retry">Reintentar</string>
+    <string name="favorite_added">Agregado a favoritos</string>
+    <string name="favorite_removed">Eliminado de favoritos</string>
+    <string name="seller_without_name">Vendedor sin nombre</string>
+    <string name="product_place_format">Lugar: %1$s</string>
+    <string name="product_condition_format">Condición: %1$s</string>
+    <string name="product_delivery_point_format">Punto de entrega: %1$s</string>
+    <string name="product_category_format">Categoría: %1$s</string>
+    <string name="home_categories_more">Otros ▾</string>
+    <string name="seller_phone_format">Tel: %1$s</string>
+    <string name="error_no_internet">Sin conexión a internet</string>
 </resources>
