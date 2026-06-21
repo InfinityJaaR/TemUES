@@ -65,7 +65,8 @@ class PagoViewModel @Inject constructor(
                             productoId = it.productoId,
                             nombreProducto = it.nombreProducto,
                             precio = it.precio,
-                            cantidad = it.cantidad
+                            cantidad = it.cantidad,
+                            urlImagen = it.urlImagen
                         )
                     },
                     total = total.value,

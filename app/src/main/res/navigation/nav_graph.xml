@@ -124,7 +124,23 @@
         android:id="@+id/historialFragment"
         android:name="com.market.temues.ui.history.HistorialFragment"
         android:label="@string/historial_titulo"
-        tools:layout="@layout/pantalla_historial_compras" />
+        tools:layout="@layout/pantalla_historial_compras">
+
+        <action
+            android:id="@+id/action_historial_to_detalleOrden"
+            app:destination="@id/detalleOrdenFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detalleOrdenFragment"
+        android:name="com.market.temues.ui.history.DetalleOrdenFragment"
+        android:label="@string/detalle_orden_titulo"
+        tools:layout="@layout/pantalla_detalle_orden">
+
+        <argument
+            android:name="ordenId"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/productDetailFragment"

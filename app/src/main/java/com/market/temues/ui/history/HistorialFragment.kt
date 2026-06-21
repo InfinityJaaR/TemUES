@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.market.temues.R
 import com.market.temues.databinding.PantallaHistorialComprasBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,7 +39,10 @@ class HistorialFragment : Fragment() {
     }
 
     private fun configurarRecyclerView() {
-        adaptador = OrdenAdapter()
+        adaptador = OrdenAdapter { orden ->
+            val argumentos = android.os.Bundle().apply { putString("ordenId", orden.id) }
+            findNavController().navigate(R.id.action_historial_to_detalleOrden, argumentos)
+        }
         binding.rvOrdenes.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adaptador

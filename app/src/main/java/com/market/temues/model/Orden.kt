@@ -17,5 +17,6 @@ data class ArticuloOrden(
     val productoId: String = "",
     val nombreProducto: String = "",
     val precio: Double = 0.0,
-    val cantidad: Int = 1
+    val cantidad: Int = 1,
+    val urlImagen: String = ""
 )

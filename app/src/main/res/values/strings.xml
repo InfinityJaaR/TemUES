@@ -86,4 +86,9 @@
     <!-- Historial -->
     <string name="historial_titulo">Mis Compras</string>
     <string name="historial_vacio">No has realizado compras aún</string>
+
+    <!-- Detalle de orden -->
+    <string name="detalle_orden_titulo">Detalle del pedido</string>
+    <string name="detalle_articulos">Artículos del pedido</string>
+    <string name="orden_codigo">Código de recogida</string>
 </resources>

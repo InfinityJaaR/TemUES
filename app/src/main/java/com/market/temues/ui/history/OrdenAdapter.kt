@@ -10,12 +10,15 @@ import com.market.temues.databinding.ItemOrdenBinding
 import com.market.temues.model.Orden
 import com.market.temues.utils.DateUtils
 
-class OrdenAdapter : ListAdapter<Orden, OrdenAdapter.OrdenViewHolder>(DiffCallback) {
+class OrdenAdapter(
+    private val alHacerClic: (Orden) -> Unit
+) : ListAdapter<Orden, OrdenAdapter.OrdenViewHolder>(DiffCallback) {
 
     inner class OrdenViewHolder(private val binding: ItemOrdenBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun vincular(orden: Orden) {
+            binding.root.setOnClickListener { alHacerClic(orden) }
             binding.txtCodigoOrden.text = orden.codigo
             binding.txtTotalOrden.text = "$%.2f".format(orden.total)
             binding.txtFechaOrden.text = DateUtils.formatTimestamp(orden.creadoEn)

@@ -50,6 +50,10 @@ class OrdenRemoteDataSource @Inject constructor(
         awaitClose { listener.remove() }
     }
 
+    suspend fun obtenerPorId(ordenId: String): Orden? {
+        return coleccion.document(ordenId).get().await().toObject(Orden::class.java)
+    }
+
     suspend fun actualizarEstado(ordenId: String, estado: String) {
         coleccion.document(ordenId).update("estado", estado).await()
     }
