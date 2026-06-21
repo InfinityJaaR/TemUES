@@ -1,26 +1,37 @@
 package com.market.temues.ui.checkout
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.market.temues.BuildConfig
 import com.market.temues.data.local.dao.CarritoDao
 import com.market.temues.data.remote.orden.OrdenRemoteDataSource
 import com.market.temues.model.ArticuloOrden
 import com.market.temues.model.Orden
+import com.stripe.android.ApiResultCallback
+import com.stripe.android.Stripe
+import com.stripe.android.model.PaymentMethod
+import com.stripe.android.model.PaymentMethodCreateParams
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @HiltViewModel
 class PagoViewModel @Inject constructor(
     private val carritoDao: CarritoDao,
     private val ordenDataSource: OrdenRemoteDataSource,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     val articulos = carritoDao.obtenerTodos()
@@ -43,44 +54,68 @@ class PagoViewModel @Inject constructor(
         data class Error(val mensaje: String) : ResultadoOrden()
     }
 
-    fun confirmarPedido() {
-        val usuario = auth.currentUser ?: run {
-            resultadoOrden.value = ResultadoOrden.Error("Debes iniciar sesión para continuar")
-            return
-        }
+    private suspend fun ejecutarConfirmacion(): String {
+        val usuario = auth.currentUser
+            ?: throw Exception("Debes iniciar sesión para continuar")
         val items = articulos.value
-        if (items.isEmpty()) {
-            resultadoOrden.value = ResultadoOrden.Error("El carrito está vacío")
-            return
-        }
+        if (items.isEmpty()) throw Exception("El carrito está vacío")
+        val codigo = (1000..9999).random().toString()
+        val primerArticulo = items.first()
+        val orden = Orden(
+            usuarioId = usuario.uid,
+            articulos = items.map {
+                ArticuloOrden(
+                    productoId = it.productoId,
+                    nombreProducto = it.nombreProducto,
+                    precio = it.precio,
+                    cantidad = it.cantidad,
+                    urlImagen = it.urlImagen
+                )
+            },
+            total = total.value,
+            metodoPago = metodoPago.value,
+            estado = "pendiente",
+            codigo = codigo,
+            vendedorId = primerArticulo.vendedorId,
+            lugarEntrega = primerArticulo.lugarEntrega
+        )
+        ordenDataSource.crear(orden)
+        carritoDao.limpiarTodo()
+        return codigo
+    }
+
+    fun confirmarPedido() {
         viewModelScope.launch {
             cargando.value = true
             try {
-                val codigo = (1000..9999).random().toString()
-                val primerArticulo = items.first()
-                val orden = Orden(
-                    usuarioId = usuario.uid,
-                    articulos = items.map {
-                        ArticuloOrden(
-                            productoId = it.productoId,
-                            nombreProducto = it.nombreProducto,
-                            precio = it.precio,
-                            cantidad = it.cantidad,
-                            urlImagen = it.urlImagen
-                        )
-                    },
-                    total = total.value,
-                    metodoPago = metodoPago.value,
-                    estado = "pendiente",
-                    codigo = codigo,
-                    vendedorId = primerArticulo.vendedorId,
-                    lugarEntrega = primerArticulo.lugarEntrega
-                )
-                ordenDataSource.crear(orden)
-                carritoDao.limpiarTodo()
+                val codigo = ejecutarConfirmacion()
                 resultadoOrden.value = ResultadoOrden.Exitoso(codigo)
             } catch (e: Exception) {
                 resultadoOrden.value = ResultadoOrden.Error(e.message ?: "Error al confirmar el pedido")
+            } finally {
+                cargando.value = false
+            }
+        }
+    }
+
+    fun procesarPagoTarjeta(params: PaymentMethodCreateParams) {
+        viewModelScope.launch {
+            cargando.value = true
+            try {
+                val stripe = Stripe(context, BuildConfig.STRIPE_KEY)
+                suspendCancellableCoroutine { cont ->
+                    stripe.createPaymentMethod(
+                        paymentMethodCreateParams = params,
+                        callback = object : ApiResultCallback<PaymentMethod> {
+                            override fun onSuccess(result: PaymentMethod) = cont.resume(result)
+                            override fun onError(e: Exception) = cont.resumeWithException(e)
+                        }
+                    )
+                }
+                val codigo = ejecutarConfirmacion()
+                resultadoOrden.value = ResultadoOrden.Exitoso(codigo)
+            } catch (e: Exception) {
+                resultadoOrden.value = ResultadoOrden.Error(e.message ?: "Datos de tarjeta inválidos")
             } finally {
                 cargando.value = false
             }

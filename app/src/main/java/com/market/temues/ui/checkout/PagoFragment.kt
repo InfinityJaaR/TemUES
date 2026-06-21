@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class PagoFragment : Fragment() {
 
+
     private var _binding: PantallaCheckoutBinding? = null
     private val binding get() = _binding!!
 
@@ -86,16 +87,24 @@ class PagoFragment : Fragment() {
 
     private fun configurarMetodoPago() {
         binding.rgMetodoPago.setOnCheckedChangeListener { _, checkedId ->
-            viewModel.metodoPago.value = when (checkedId) {
-                R.id.rb_tarjeta -> "tarjeta"
-                else -> "efectivo"
-            }
+            val esTarjeta = checkedId == R.id.rb_tarjeta
+            viewModel.metodoPago.value = if (esTarjeta) "tarjeta" else "efectivo"
+            binding.cardFormView.visibility = if (esTarjeta) View.VISIBLE else View.GONE
         }
     }
 
     private fun configurarBotonConfirmar() {
         binding.btnConfirmarPedido.setOnClickListener {
-            viewModel.confirmarPedido()
+            if (viewModel.metodoPago.value == "tarjeta") {
+                val params = binding.cardFormView.paymentMethodCreateParams
+                if (params == null) {
+                    mostrarDialogoError(getString(R.string.checkout_tarjeta_incompleta))
+                    return@setOnClickListener
+                }
+                viewModel.procesarPagoTarjeta(params)
+            } else {
+                viewModel.confirmarPedido()
+            }
         }
     }
 
