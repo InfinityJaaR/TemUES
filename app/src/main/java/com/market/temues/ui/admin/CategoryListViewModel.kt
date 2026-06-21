@@ -8,7 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,20 +28,15 @@ class CategoryListViewModel @Inject constructor(
     val uiState: StateFlow<CategoryListUiState> = _uiState.asStateFlow()
 
     init {
-        loadCategories()
-    }
-
-    fun loadCategories() {
         viewModelScope.launch {
-            _uiState.value = CategoryListUiState.Loading
-            try {
-                val categories = categoryRemoteDataSource.getAll().first()
-                _uiState.value = CategoryListUiState.Success(categories)
-            } catch (e: Exception) {
-                _uiState.value = CategoryListUiState.Error(
-                    e.message ?: "Error al cargar categorías"
-                )
-            }
+            categoryRemoteDataSource.getAll()
+                .retry(3)
+                .catch { e ->
+                    _uiState.value = CategoryListUiState.Error(e.message ?: "Error desconocido")
+                }
+                .collect { categories ->
+                    _uiState.value = CategoryListUiState.Success(categories)
+                }
         }
     }
 }

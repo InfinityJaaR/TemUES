@@ -1,6 +1,7 @@
 package com.market.temues.data.remote.category
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.MetadataChanges
 import com.market.temues.model.Category
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,14 +19,17 @@ class CategoryRemoteDataSource @Inject constructor(
     fun getAll(): Flow<List<Category>> = callbackFlow {
         val registration = collection
             .orderBy("order")
-            .addSnapshotListener { snapshot, error ->
+            .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
                 if (error != null) {
                     close(error)
                     return@addSnapshotListener
                 }
-                val categories = snapshot?.documents?.mapNotNull {
-                    it.toObject(Category::class.java)?.copy(id = it.id)
-                } ?: emptyList()
+                if (snapshot?.metadata?.isFromCache == true) return@addSnapshotListener
+
+                val categories = snapshot?.documents
+                    ?.filter { it.exists() }
+                    ?.mapNotNull { it.toObject(Category::class.java)?.copy(id = it.id) }
+                ?: emptyList()
                 trySend(categories)
             }
         awaitClose { registration.remove() }
