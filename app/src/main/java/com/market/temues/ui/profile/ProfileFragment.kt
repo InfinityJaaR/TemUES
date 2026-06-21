@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
@@ -79,13 +80,13 @@ class ProfileFragment : Fragment() {
             usuario?.let {
                 binding.tvName.text = it.name.ifEmpty { "Usuario" }
                 binding.tvEmail.text = it.email
-                
+
                 Glide.with(this)
                     .load(it.photoUrl)
                     .placeholder(android.R.drawable.ic_menu_gallery)
                     .circleCrop()
                     .into(binding.ivProfilePhoto)
-                
+
                 binding.btnAdminPanel.isVisible = it.isAdmin
             }
         }
@@ -112,9 +113,9 @@ class ProfileFragment : Fragment() {
                 .build()
             GoogleSignIn.getClient(requireActivity(), opcionesGoogle).signOut()
         } catch (_: Exception) { }
-        
+
         modeloAuth.signOut()
-        
+
         val opcionesNav = androidx.navigation.NavOptions.Builder()
             .setPopUpTo(R.id.nav_graph, true)
             .build()

@@ -5,6 +5,7 @@ import com.market.temues.model.Category
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -41,5 +42,23 @@ class CategoryRemoteDataSource @Inject constructor(
                 trySend(category)
             }
         awaitClose { registration.remove() }
+    }
+
+    suspend fun create(category: Category): String {
+        val docRef = collection.document()
+        docRef.set(category.copy(id = docRef.id)).await()
+        return docRef.id
+    }
+
+    suspend fun update(category: Category) {
+        collection.document(category.id).set(category).await()
+    }
+
+    suspend fun getMaxOrder(): Int {
+        val snapshot = collection.orderBy("order", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(1)
+            .get()
+            .await()
+        return snapshot.documents.firstOrNull()?.getLong("order")?.toInt() ?: 0
     }
 }
