@@ -125,6 +125,8 @@
     <string name="checkout_metodo_pago">Método de pago</string>
     <string name="checkout_efectivo">Efectivo al recibir</string>
     <string name="checkout_tarjeta">Tarjeta de crédito/débito</string>
+    <string name="checkout_tarjeta_incompleta">Completa los datos de la tarjeta</string>
+    <string name="checkout_tarjeta_declinada">Tu tarjeta fue declinada. Verifica los datos o intenta con otro método de pago.</string>
     <string name="checkout_confirmar">Confirmar pedido</string>
     <string name="checkout_coordinar_chat">Coordinar por chat</string>
     <string name="checkout_pedido_exitoso">¡Pedido realizado!</string>
