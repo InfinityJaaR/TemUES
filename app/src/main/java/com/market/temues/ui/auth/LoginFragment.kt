@@ -151,9 +151,12 @@ class LoginFragment : Fragment() {
 
                 is AuthUiState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    findNavController().navigate(
+                    val destination = if (state.user.isAdmin) {
+                        R.id.action_login_to_adminDashboard
+                    } else {
                         R.id.action_login_to_home
-                    )
+                    }
+                    findNavController().navigate(destination)
                 }
 
                 is AuthUiState.Error -> {
