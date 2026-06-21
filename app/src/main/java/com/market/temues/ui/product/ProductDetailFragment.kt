@@ -32,6 +32,7 @@ class ProductDetailFragment : Fragment() {
     private val carritoViewModel: CarritoViewModel by viewModels()
 
     private var esFavoritoSeleccionado = false
+    private var productoActual: com.market.temues.model.Product? = null
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -50,9 +51,11 @@ class ProductDetailFragment : Fragment() {
         observarEstadoFavorito()
 
         binding.btnBuyNow.setOnClickListener {
+            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnAddCart.setOnClickListener {
+            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnFavorite.setOnClickListener {
@@ -102,6 +105,7 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun renderProduct(product: Product) {
+        productoActual = product
         val lugarEntrega = product.location.ifBlank { "Coordinar por chat" }
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)
