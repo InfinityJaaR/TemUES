@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.GridLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -16,11 +13,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
 import com.market.temues.data.remote.storage.StorageDataSource
+import com.market.temues.databinding.ItemProductCardBinding
 import com.market.temues.databinding.PantallaBusquedaBinding
+import com.market.temues.model.Category
 import com.market.temues.model.Product
+import com.market.temues.ui.common.ProductAdapter
 import com.market.temues.ui.common.ProductListUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,6 +33,8 @@ class SearchFragment : Fragment() {
     private var _binding: PantallaBusquedaBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModels()
+    private lateinit var productAdapter: ProductAdapter
+    private val chipsCategorias = mutableMapOf<String, TextView>()
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -45,10 +49,25 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configurarListaProductos()
         configurarBusquedaYCategorias()
         observarEstado()
         binding.actualizarBusqueda.setOnRefreshListener { viewModel.cargarProductos() }
         viewModel.cargarProductos()
+    }
+
+    private fun configurarListaProductos() {
+        productAdapter = ProductAdapter(
+            cargarImagen = ::loadProductImage,
+            alSeleccionarProducto = { producto ->
+                findNavController().navigate(
+                    R.id.action_search_to_productDetail,
+                    Bundle().apply { putString("productId", producto.id) }
+                )
+            }
+        )
+        binding.listaProductosBusqueda.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.listaProductosBusqueda.adapter = productAdapter
     }
 
     private fun configurarBusquedaYCategorias() {
@@ -69,7 +88,7 @@ class SearchFragment : Fragment() {
                         ProductListUiState.Loading -> mostrarCargando()
                         is ProductListUiState.Success -> {
                             ocultarCargando()
-                            renderProductos(state.products)
+                            renderProductos(state.products, getString(R.string.products_empty))
                         }
                         is ProductListUiState.Empty -> {
                             ocultarCargando()
@@ -85,7 +104,7 @@ class SearchFragment : Fragment() {
     private fun mostrarCargando() {
         binding.animacionCargaBusqueda.isVisible = true
         binding.actualizarBusqueda.isRefreshing = true
-        binding.txtEstadoBusqueda.text = "Cargando productos desde Firestore..."
+        binding.txtEstadoBusqueda.text = getString(R.string.products_loading)
     }
 
     private fun ocultarCargando() {
@@ -97,6 +116,9 @@ class SearchFragment : Fragment() {
         binding.animacionCargaBusqueda.isVisible = false
         binding.actualizarBusqueda.isRefreshing = false
         binding.txtEstadoBusqueda.text = mensaje
+        Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
+            .setAction(R.string.retry) { viewModel.cargarProductos() }
+            .show()
     }
 
     private fun seleccionarCategoria(categoriaId: String, chipSeleccionado: TextView) {
@@ -117,50 +139,33 @@ class SearchFragment : Fragment() {
             chip.setBackgroundResource(if (estaSeleccionado) R.drawable.bg_chip_selected else R.drawable.bg_chip)
             chip.setTextColor(requireContext().getColor(if (estaSeleccionado) R.color.white else R.color.temues_navy))
         }
+        chipsCategorias.values.forEach { chip ->
+            val estaSeleccionado = chip == chipSeleccionado
+            chip.setBackgroundResource(if (estaSeleccionado) R.drawable.bg_chip_selected else R.drawable.bg_chip)
+            chip.setTextColor(requireContext().getColor(if (estaSeleccionado) R.color.white else R.color.temues_navy))
+        }
     }
 
-    private fun renderProductos(productos: List<Product>, emptyMessage: String = "No hay productos que coincidan con tu búsqueda o categoría.") {
-        binding.gridProductosBusqueda.removeAllViews()
+    private fun renderProductos(productos: List<Product>, emptyMessage: String) {
         binding.txtEstadoBusqueda.text = if (productos.isEmpty()) {
             emptyMessage
         } else {
-            "${productos.size} productos encontrados desde Firestore."
+            getString(R.string.products_found, productos.size)
         }
-
-        productos.forEach { producto ->
-            val card = layoutInflater.inflate(R.layout.item_product_card, binding.gridProductosBusqueda, false) as LinearLayout
-            val productImage = card.findViewById<ImageView>(R.id.img_product)
-            card.findViewById<TextView>(R.id.txt_product_name).text = producto.name
-            card.findViewById<TextView>(R.id.txt_product_meta).text = "${producto.location} · ${producto.condition}"
-            card.findViewById<TextView>(R.id.txt_product_price).text = "$%.2f".format(producto.price)
-            loadProductImage(producto.images.firstOrNull(), productImage)
-            card.setOnClickListener {
-                findNavController().navigate(
-                    R.id.action_search_to_productDetail,
-                    Bundle().apply { putString("productId", producto.id) }
-                )
-            }
-            card.layoutParams = GridLayout.LayoutParams().apply {
-                width = 0
-                height = ViewGroup.LayoutParams.WRAP_CONTENT
-                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                setMargins(8, 8, 8, 8)
-            }
-            binding.gridProductosBusqueda.addView(card)
-        }
+        productAdapter.submitList(productos)
     }
 
-    private fun loadProductImage(path: String?, imageView: ImageView) {
+    private fun loadProductImage(path: String?, itemBinding: ItemProductCardBinding) {
         if (path.isNullOrBlank()) return
 
         viewLifecycleOwner.lifecycleScope.launch {
             storageDataSource.getImageUrl(path).collect { result ->
                 result.getOrNull()?.let { imageUrl ->
-                    Glide.with(imageView)
+                    Glide.with(itemBinding.imgProduct)
                         .load(imageUrl)
                         .placeholder(R.drawable.bg_soft_card)
                         .error(R.drawable.bg_soft_card)
-                        .into(imageView)
+                        .into(itemBinding.imgProduct)
                 }
             }
         }

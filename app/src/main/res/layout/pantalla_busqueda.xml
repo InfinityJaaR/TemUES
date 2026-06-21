@@ -54,6 +54,7 @@
                 android:scrollbars="none">
 
                 <LinearLayout
+                    android:id="@+id/contenedor_categorias_busqueda"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -75,13 +76,12 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <GridLayout
-                android:id="@+id/grid_productos_busqueda"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lista_productos_busqueda"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:columnCount="2"
-                android:useDefaultMargins="true" />
+                android:nestedScrollingEnabled="false" />
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animacion_carga_busqueda"

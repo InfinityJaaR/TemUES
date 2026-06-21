@@ -63,4 +63,23 @@
     <string name="seller_sale_title">Venta realizada</string>
     <string name="favorites_title">Favoritos</string>
     <string name="chat_detail_title">Chat</string>
+    <string name="product_card_meta">%1$s · %2$s</string>
+    <string name="product_price_format">$%1$.2f</string>
+    <string name="products_loading">Cargando productos desde Firestore...</string>
+    <string name="products_empty">No hay productos que coincidan con tu búsqueda o categoría.</string>
+    <string name="products_loaded">%1$d productos cargados desde Firestore.</string>
+    <string name="products_found">%1$d productos encontrados desde Firestore.</string>
+    <string name="products_load_error">No se pudieron cargar los productos.</string>
+    <string name="retry">Reintentar</string>
+    <string name="delivery_place_format">Lugar: %1$s</string>
+    <string name="delivery_point_format">Punto de entrega: %1$s</string>
+    <string name="condition_format">Condición: %1$s</string>
+    <string name="category_format">Categoría: %1$s</string>
+    <string name="seller_without_name">Vendedor sin nombre</string>
+    <string name="coordinate_by_chat">Coordinar por chat</string>
+    <string name="product_missing">No se encontró el producto solicitado.</string>
+    <string name="product_load_error">No se pudo cargar el producto.</string>
+    <string name="product_unavailable">El producto ya no está disponible.</string>
+    <string name="favorite_added">Agregado a Favoritos</string>
+    <string name="favorite_removed">Eliminado de Favoritos</string>
 </resources>

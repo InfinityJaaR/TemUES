@@ -104,6 +104,8 @@ dependencies {
 
     // Fragment KTX (viewModels delegate)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.swiperefreshlayout)
 
     // Standard Libraries
     implementation(libs.androidx.core.ktx)

@@ -44,17 +44,37 @@ class ProductDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observarProducto()
-        binding.btnBuyNow.setOnClickListener {
-            findNavController().navigate(R.id.action_productDetail_to_cart)
-        }
-        binding.btnAddCart.setOnClickListener {
-            findNavController().navigate(R.id.action_productDetail_to_cart)
-        }
-        binding.btnFavorite.setOnClickListener {
-            alternarFavoritoVisual()
-        }
-        binding.btnMessageSeller.setOnClickListener {
-            findNavController().navigate(R.id.chatDetailFragment)
+        observarEventos()
+        binding.btnBuyNow.setOnClickListener { viewModel.comprarAhora() }
+        binding.btnAddCart.setOnClickListener { viewModel.agregarAlCarrito() }
+        binding.btnFavorite.setOnClickListener { viewModel.alternarFavorito() }
+        binding.btnMessageSeller.setOnClickListener { viewModel.abrirChat() }
+    }
+
+    private fun observarEventos() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.eventos.collect { evento ->
+                    when (evento) {
+                        is ProductDetailEvent.ToggleFavorite -> alternarFavoritoVisual()
+                        is ProductDetailEvent.OpenChat -> findNavController().navigate(
+                            R.id.chatDetailFragment,
+                            Bundle().apply {
+                                putString("sellerId", evento.sellerId)
+                                putString("productId", evento.productId)
+                            }
+                        )
+                        is ProductDetailEvent.AddToCart -> findNavController().navigate(
+                            R.id.action_productDetail_to_cart,
+                            Bundle().apply { putString("productId", evento.productId) }
+                        )
+                        is ProductDetailEvent.BuyNow -> findNavController().navigate(
+                            R.id.action_productDetail_to_confirmPurchase,
+                            Bundle().apply { putString("productId", evento.productId) }
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -88,20 +108,20 @@ class ProductDetailFragment : Fragment() {
             if (esFavoritoSeleccionado) R.color.temues_red else R.color.temues_text_muted
         )
         binding.btnFavorite.iconTint = android.content.res.ColorStateList.valueOf(colorFavorito)
-        val mensaje = if (esFavoritoSeleccionado) "Agregado a Favoritos" else "Eliminado de Favoritos"
+        val mensaje = if (esFavoritoSeleccionado) getString(R.string.favorite_added) else getString(R.string.favorite_removed)
         Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
     }
 
     private fun renderProduct(product: Product) {
-        val lugarEntrega = product.location.ifBlank { "Coordinar por chat" }
+        val lugarEntrega = product.location.ifBlank { getString(R.string.coordinate_by_chat) }
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)
         binding.txtProductDescription.text = product.description
-        binding.txtSeller.text = product.sellerName.ifBlank { "Vendedor sin nombre" }
-        binding.txtLocation.text = "Lugar: $lugarEntrega"
-        binding.txtCondition.text = "Condición: ${product.condition.replaceFirstChar { it.uppercase() }}"
-        binding.txtDeliveryPoint.text = "Punto de entrega: $lugarEntrega"
-        binding.txtCategory.text = "Categoría: ${product.categoryName}"
+        binding.txtSeller.text = product.sellerName.ifBlank { getString(R.string.seller_without_name) }
+        binding.txtLocation.text = getString(R.string.delivery_place_format, lugarEntrega)
+        binding.txtCondition.text = getString(R.string.condition_format, product.condition.replaceFirstChar { it.uppercase() })
+        binding.txtDeliveryPoint.text = getString(R.string.delivery_point_format, lugarEntrega)
+        binding.txtCategory.text = getString(R.string.category_format, product.categoryName)
         binding.imgSellerPhoto.setImageResource(R.drawable.bg_temues_gradient)
         loadProductImage(product.images.firstOrNull())
     }
@@ -122,7 +142,7 @@ class ProductDetailFragment : Fragment() {
         }
     }
 
-    private fun formatPrice(price: Double) = "$%.2f".format(price)
+    private fun formatPrice(price: Double) = getString(R.string.product_price_format, price)
 
     override fun onDestroyView() {
         super.onDestroyView()
