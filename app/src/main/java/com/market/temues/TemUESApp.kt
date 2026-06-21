@@ -8,6 +8,8 @@ import dagger.hilt.android.HiltAndroidApp
 class TemUESApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
+        if (BuildConfig.STRIPE_KEY.isNotEmpty()) {
+            PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
+        }
     }
 }
