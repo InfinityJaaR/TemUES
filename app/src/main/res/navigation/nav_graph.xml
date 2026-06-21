@@ -19,6 +19,12 @@
             app:popUpToInclusive="true" />
 
         <action
+            android:id="@+id/action_login_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
             android:id="@+id/action_login_to_register"
             app:destination="@id/registerFragment" />
 
@@ -36,6 +42,12 @@
         <action
             android:id="@+id/action_register_to_home"
             app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_register_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
 
@@ -101,13 +113,26 @@
         android:id="@+id/chatDetailFragment"
         android:name="com.market.temues.ui.chat.ChatDetailFragment"
         android:label="@string/chat_detail_title"
-        tools:layout="@layout/pantalla_detalle_chat" />
+        tools:layout="@layout/pantalla_detalle_chat">
+        <argument
+            android:name="sellerId"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="productId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.market.temues.ui.profile.ProfileFragment"
         android:label="@string/nav_profile"
         tools:layout="@layout/pantalla_perfil">
+
+        <action
+            android:id="@+id/action_profile_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment" />
 
         <action
             android:id="@+id/action_profile_to_login"
@@ -175,6 +200,14 @@
         <action
             android:id="@+id/action_productDetail_to_favorites"
             app:destination="@id/favoritesFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_chatDetail"
+            app:destination="@id/chatDetailFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_checkout"
+            app:destination="@id/checkoutFragment" />
     </fragment>
 
     <fragment
@@ -236,6 +269,24 @@
         android:name="com.market.temues.ui.payment.PurchaseSuccessFragment"
         android:label="@string/purchase_success_title"
         tools:layout="@layout/pantalla_compra_exitosa" />
+
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.market.temues.ui.admin.AdminDashboardFragment"
+        android:label="@string/admin_dashboard_title"
+        tools:layout="@layout/fragment_admin_dashboard" />
+
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.market.temues.ui.admin.CategoryListFragment"
+        android:label="@string/admin_categories_title"
+        tools:layout="@layout/fragment_category_list" />
+
+    <fragment
+        android:id="@+id/adminCreateCategoryFragment"
+        android:name="com.market.temues.ui.admin.AdminCreateCategoryFragment"
+        android:label="@string/admin_create_category_title"
+        tools:layout="@layout/fragment_admin_create_category" />
 
     <fragment
         android:id="@+id/sellerSaleDetailFragment"

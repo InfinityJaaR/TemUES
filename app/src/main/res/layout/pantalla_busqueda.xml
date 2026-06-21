@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_busqueda"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/temues_bg">
@@ -16,26 +17,22 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Buscar productos"
-                android:textColor="@color/temues_navy"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_busqueda_producto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:hint="¿Qué quieres encontrar?"
+                app:endIconMode="clear_text"
                 app:startIconDrawable="@drawable/ic_search">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_busqueda_producto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -62,7 +59,7 @@
                     <TextView android:id="@+id/chip_busqueda_electronica" style="@style/TemUESChip" android:text="Electrónica" />
                     <TextView android:id="@+id/chip_busqueda_ropa" style="@style/TemUESChip" android:text="Ropa" />
                     <TextView android:id="@+id/chip_busqueda_hogar" style="@style/TemUESChip" android:text="Hogar" />
-                    <TextView android:id="@+id/chip_busqueda_servicios" style="@style/TemUESChip" android:text="Servicios" />
+                    <TextView android:id="@+id/chip_busqueda_servicios" style="@style/TemUESChip" android:text="@string/home_categories_more" />
                 </LinearLayout>
             </HorizontalScrollView>
 
@@ -75,13 +72,12 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <GridLayout
-                android:id="@+id/grid_productos_busqueda"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lista_productos_busqueda"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:columnCount="2"
-                android:useDefaultMargins="true" />
+                android:nestedScrollingEnabled="false" />
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animacion_carga_busqueda"
@@ -105,5 +101,5 @@
                 android:textColor="@color/temues_text"
                 android:textSize="14sp" />
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

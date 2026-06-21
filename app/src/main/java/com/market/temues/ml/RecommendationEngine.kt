@@ -2,6 +2,7 @@ package com.market.temues.ml
 
 import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.firebase.firestore.Query
 import com.market.temues.model.Product
 import kotlinx.coroutines.tasks.await
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class RecommendationEngine @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
 
     private var interpreter: Interpreter? = null
@@ -40,16 +41,22 @@ class RecommendationEngine @Inject constructor(
         products: List<Product>,
         uid: String
     ): List<Product> {
-        if (products.isEmpty()) return products
+        if (products.isEmpty() || uid.isBlank()) return products
 
-        val searchHistory = fetchSearchHistory(uid)
+        val searchHistory = runCatching { fetchSearchHistory(uid) }.getOrElse { emptyList() }
         if (searchHistory.isEmpty()) return products
 
+        val statisticalScores = buildStatisticalScores(products, searchHistory)
+
         if (interpreter != null) {
-            return rankProductsWithModel(products, searchHistory)
+            val rankedWithModel = runCatching { rankProductsWithModel(products, searchHistory, statisticalScores) }.getOrNull()
+            if (!rankedWithModel.isNullOrEmpty()) return rankedWithModel
         }
 
-        return rankProductsStatistical(products, searchHistory)
+        return products.sortedWith(
+            compareByDescending<Product> { statisticalScores[it.id] ?: 0f }
+                .thenByDescending { it.createdAt }
+        )
     }
 
     private suspend fun fetchSearchHistory(uid: String): List<String> {
@@ -68,7 +75,8 @@ class RecommendationEngine @Inject constructor(
 
     private fun rankProductsWithModel(
         products: List<Product>,
-        searchHistory: List<String>
+        searchHistory: List<String>,
+        statisticalScores: Map<String, Float>
     ): List<Product> {
         val keywords = searchHistory
             .flatMap { it.lowercase().split(" ") }
@@ -88,9 +96,11 @@ class RecommendationEngine @Inject constructor(
             val inputVector = buildFeatureVector(product, keywords, maxPrice)
             val output = Array(1) { FloatArray(1) }
             interpreter?.run(inputVector, output)
-            Pair(product, output[0][0])
+            val modelScore = output[0][0]
+            val searchScore = statisticalScores[product.id] ?: 0f
+            Pair(product, modelScore + (searchScore * 10f))
         }
-            .sortedByDescending { it.second }
+            .sortedWith(compareByDescending<Pair<Product, Float>> { it.second }.thenByDescending { it.first.createdAt })
             .map { it.first }
     }
 
@@ -130,26 +140,23 @@ class RecommendationEngine @Inject constructor(
         return arrayOf(arrayOf(vector))
     }
 
-    private fun rankProductsStatistical(
+    private fun buildStatisticalScores(
         products: List<Product>,
         searchHistory: List<String>
-    ): List<Product> {
+    ): Map<String, Float> {
         val keywords = searchHistory
             .flatMap { it.lowercase().split(" ") }
             .filter { it.length > 2 }
             .groupingBy { it }
             .eachCount()
 
-        if (keywords.isEmpty()) return products
+        if (keywords.isEmpty()) return products.associate { it.id to 0f }
 
         val maxKeywordFreq = keywords.values.max().toFloat()
 
-        return products.map { product ->
-            val score = calculateScore(product, keywords, maxKeywordFreq)
-            Pair(product, score)
+        return products.associate { product ->
+            product.id to calculateScore(product, keywords, maxKeywordFreq)
         }
-            .sortedByDescending { it.second }
-            .map { it.first }
     }
 
     private fun calculateScore(

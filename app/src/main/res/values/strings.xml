@@ -53,6 +53,30 @@
     <!-- Google Sign-In (reemplazar con el ID real de Firebase) -->
     <string name="default_web_client_id" translatable="false">885653148382-1ckqkhdb4t5djlsemc5gm93q1n60ormo.apps.googleusercontent.com</string>
 
+    <!-- Admin -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="admin_dashboard_title">Panel de Administración</string>
+    <string name="admin_total_products">Total de productos</string>
+    <string name="admin_products_by_category">Productos por categoría</string>
+    <string name="admin_trends">Tendencias</string>
+    <string name="admin_recent_products">Productos recientes</string>
+    <string name="admin_seed_data">Cargar datos de admin</string>
+    <string name="admin_seed_success">Cuenta admin creada. Vuelve a iniciar sesión.</string>
+    <string name="admin_seed_error">Error al crear cuenta admin</string>
+    <string name="admin_categories">Categorías</string>
+    <string name="admin_categories_title">Categorías</string>
+    <string name="admin_create_category_title">Crear categoría</string>
+    <string name="admin_create_category">Crear categoría</string>
+    <string name="admin_category_name">Nombre de la categoría</string>
+    <string name="admin_category_icon">URL del ícono</string>
+    <string name="admin_category_order">Orden</string>
+    <string name="admin_category_save">Guardar</string>
+    <string name="admin_category_saved">Categoría creada</string>
+    <string name="admin_category_updated">Categoría actualizada</string>
+    <string name="trend_up">↑</string>
+    <string name="trend_stable">→</string>
+    <string name="trend_down">↓</string>
+
     <!-- Commerce Flow Mock Screens -->
     <string name="product_detail_title">Detalle del producto</string>
     <string name="cart_title">Carrito de compra</string>
@@ -117,4 +141,27 @@
     <string name="detalle_orden_titulo">Detalle del pedido</string>
     <string name="detalle_articulos">Artículos del pedido</string>
     <string name="orden_codigo">Código de recogida</string>
+
+    <!-- Productos -->
+    <string name="product_price_format">$%1$.2f</string>
+    <string name="product_card_meta">%1$s · %2$s</string>
+    <string name="product_image_description">Imagen del producto</string>
+    <string name="product_name_placeholder">Nombre del producto</string>
+    <string name="product_meta_placeholder">Ubicación · condición</string>
+    <string name="product_price_placeholder">$0.00</string>
+    <string name="products_loading_firestore">Cargando productos desde Firestore...</string>
+    <string name="products_empty_filtered">No hay productos que coincidan con tu búsqueda o categoría.</string>
+    <string name="products_loaded_count">%1$d productos cargados desde Firestore.</string>
+    <string name="products_found_count">%1$d productos encontrados.</string>
+    <string name="retry">Reintentar</string>
+    <string name="favorite_added">Agregado a favoritos</string>
+    <string name="favorite_removed">Eliminado de favoritos</string>
+    <string name="seller_without_name">Vendedor sin nombre</string>
+    <string name="product_place_format">Lugar: %1$s</string>
+    <string name="product_condition_format">Condición: %1$s</string>
+    <string name="product_delivery_point_format">Punto de entrega: %1$s</string>
+    <string name="product_category_format">Categoría: %1$s</string>
+    <string name="home_categories_more">Otros ▾</string>
+    <string name="seller_phone_format">Tel: %1$s</string>
+    <string name="error_no_internet">Sin conexión a internet</string>
 </resources>
