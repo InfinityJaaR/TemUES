@@ -114,7 +114,17 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_profile_to_historial"
+            app:destination="@id/historialFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/historialFragment"
+        android:name="com.market.temues.ui.history.HistorialFragment"
+        android:label="@string/historial_titulo"
+        tools:layout="@layout/pantalla_historial_compras" />
 
     <fragment
         android:id="@+id/productDetailFragment"

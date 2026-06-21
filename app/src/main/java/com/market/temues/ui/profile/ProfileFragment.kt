@@ -39,6 +39,10 @@ class ProfileFragment : Fragment() {
             binding.tvEmail.text = user?.email ?: "No autenticado"
         }
 
+        binding.btnMisCompras.setOnClickListener {
+            findNavController().navigate(R.id.action_profile_to_historial)
+        }
+
         binding.btnLogout.setOnClickListener {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

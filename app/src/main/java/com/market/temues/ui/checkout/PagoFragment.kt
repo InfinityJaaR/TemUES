@@ -97,7 +97,7 @@ class PagoFragment : Fragment() {
             .setMessage(getString(R.string.checkout_codigo_mensaje, codigo))
             .setCancelable(false)
             .setPositiveButton(getString(R.string.checkout_ver_compras)) { _, _ ->
-                findNavController().navigate(R.id.homeFragment)
+                findNavController().navigate(R.id.historialFragment)
             }
             .show()
     }

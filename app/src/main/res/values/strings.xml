@@ -82,4 +82,8 @@
     <string name="checkout_pedido_exitoso">¡Pedido realizado!</string>
     <string name="checkout_codigo_mensaje">Tu código de recogida es:\n\n%s\n\nMuéstralo al vendedor cuando recibas tu producto.</string>
     <string name="checkout_ver_compras">Ver mis compras</string>
+
+    <!-- Historial -->
+    <string name="historial_titulo">Mis Compras</string>
+    <string name="historial_vacio">No has realizado compras aún</string>
 </resources>

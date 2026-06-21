@@ -1,7 +1,6 @@
 package com.market.temues.data.remote.orden
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.market.temues.model.Orden
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -26,12 +25,12 @@ class OrdenRemoteDataSource @Inject constructor(
     fun obtenerOrdenesUsuario(usuarioId: String): Flow<List<Orden>> = callbackFlow {
         val listener = coleccion
             .whereEqualTo("usuarioId", usuarioId)
-            .orderBy("creadoEn", Query.Direction.DESCENDING)
             .addSnapshotListener { snap, error ->
-                if (error != null) { trySend(emptyList()); return@addSnapshotListener }
-                val ordenes = snap?.documents?.mapNotNull {
-                    it.toObject(Orden::class.java)
-                } ?: emptyList()
+                if (error != null) { close(error); return@addSnapshotListener }
+                val ordenes = snap?.documents
+                    ?.mapNotNull { it.toObject(Orden::class.java) }
+                    ?.sortedByDescending { it.creadoEn }
+                    ?: emptyList()
                 trySend(ordenes)
             }
         awaitClose { listener.remove() }
@@ -40,12 +39,12 @@ class OrdenRemoteDataSource @Inject constructor(
     fun obtenerOrdenesVendedor(vendedorId: String): Flow<List<Orden>> = callbackFlow {
         val listener = coleccion
             .whereEqualTo("vendedorId", vendedorId)
-            .orderBy("creadoEn", Query.Direction.DESCENDING)
             .addSnapshotListener { snap, error ->
-                if (error != null) { trySend(emptyList()); return@addSnapshotListener }
-                val ordenes = snap?.documents?.mapNotNull {
-                    it.toObject(Orden::class.java)
-                } ?: emptyList()
+                if (error != null) { close(error); return@addSnapshotListener }
+                val ordenes = snap?.documents
+                    ?.mapNotNull { it.toObject(Orden::class.java) }
+                    ?.sortedByDescending { it.creadoEn }
+                    ?: emptyList()
                 trySend(ordenes)
             }
         awaitClose { listener.remove() }
