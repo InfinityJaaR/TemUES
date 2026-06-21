@@ -35,7 +35,9 @@
                     android:id="@+id/input_busqueda_producto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -75,13 +77,12 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <GridLayout
-                android:id="@+id/grid_productos_busqueda"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lista_productos_busqueda"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:columnCount="2"
-                android:useDefaultMargins="true" />
+                android:nestedScrollingEnabled="false" />
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animacion_carga_busqueda"

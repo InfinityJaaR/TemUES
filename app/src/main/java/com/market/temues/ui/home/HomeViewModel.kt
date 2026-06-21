@@ -2,8 +2,9 @@ package com.market.temues.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.market.temues.data.remote.FirestoreSeeder
+import com.google.firebase.auth.FirebaseAuth
 import com.market.temues.data.remote.product.ProductRemoteDataSource
+import com.market.temues.ml.RecommendationEngine
 import com.market.temues.model.Product
 import com.market.temues.ui.common.ProductListUiState
 import com.market.temues.ui.common.matchesSearch
@@ -18,28 +19,36 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val productRemoteDataSource: ProductRemoteDataSource,
-    private val firestoreSeeder: FirestoreSeeder
+    private val recommendationEngine: RecommendationEngine,
+    private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ProductListUiState>(ProductListUiState.Loading)
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
+
+    private val _rankedProducts = MutableStateFlow<List<Product>>(emptyList())
+    val rankedProducts: StateFlow<List<Product>> = _rankedProducts.asStateFlow()
 
     private var productosFirestore: List<Product> = emptyList()
     private var textoBusqueda: String = ""
     private var categoriaSeleccionada: String = ""
     private var cargaIniciada = false
 
-    fun cargarProductos() {
-        if (cargaIniciada) return
+    init {
+        cargarProductos()
+    }
+
+    fun cargarProductos(forzarRecarga: Boolean = false) {
+        if (cargaIniciada && !forzarRecarga) return
         cargaIniciada = true
         viewModelScope.launch {
             _uiState.value = ProductListUiState.Loading
-            firestoreSeeder.seed()
             productRemoteDataSource.getAll()
                 .catch { error ->
                     _uiState.value = ProductListUiState.Error(error.message ?: "No se pudieron cargar los productos.")
                 }
                 .collect { products ->
-                    productosFirestore = products
+                    productosFirestore = rankearProductos(products)
+                    _rankedProducts.value = productosFirestore
                     aplicarFiltros()
                 }
         }
@@ -53,6 +62,15 @@ class HomeViewModel @Inject constructor(
     fun seleccionarCategoria(categoriaId: String) {
         categoriaSeleccionada = categoriaId
         aplicarFiltros()
+    }
+
+    private suspend fun rankearProductos(products: List<Product>): List<Product> {
+        val uid = firebaseAuth.currentUser?.uid.orEmpty()
+        return runCatching {
+            recommendationEngine.rankProducts(products, uid)
+        }.getOrElse {
+            products
+        }
     }
 
     private fun aplicarFiltros() {

@@ -2,6 +2,7 @@ package com.market.temues.ml
 
 import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.firebase.firestore.Query
 import com.market.temues.model.Product
 import kotlinx.coroutines.tasks.await
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class RecommendationEngine @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
 
     private var interpreter: Interpreter? = null
@@ -40,13 +41,14 @@ class RecommendationEngine @Inject constructor(
         products: List<Product>,
         uid: String
     ): List<Product> {
-        if (products.isEmpty()) return products
+        if (products.isEmpty() || uid.isBlank()) return products
 
-        val searchHistory = fetchSearchHistory(uid)
+        val searchHistory = runCatching { fetchSearchHistory(uid) }.getOrElse { emptyList() }
         if (searchHistory.isEmpty()) return products
 
         if (interpreter != null) {
-            return rankProductsWithModel(products, searchHistory)
+            val rankedWithModel = runCatching { rankProductsWithModel(products, searchHistory) }.getOrNull()
+            if (!rankedWithModel.isNullOrEmpty()) return rankedWithModel
         }
 
         return rankProductsStatistical(products, searchHistory)

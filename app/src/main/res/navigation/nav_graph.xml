@@ -101,7 +101,16 @@
         android:id="@+id/chatDetailFragment"
         android:name="com.market.temues.ui.chat.ChatDetailFragment"
         android:label="@string/chat_detail_title"
-        tools:layout="@layout/pantalla_detalle_chat" />
+        tools:layout="@layout/pantalla_detalle_chat">
+        <argument
+            android:name="sellerId"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="productId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
@@ -175,6 +184,14 @@
         <action
             android:id="@+id/action_productDetail_to_favorites"
             app:destination="@id/favoritesFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_chatDetail"
+            app:destination="@id/chatDetailFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_checkout"
+            app:destination="@id/checkoutFragment" />
     </fragment>
 
     <fragment

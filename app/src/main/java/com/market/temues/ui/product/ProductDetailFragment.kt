@@ -1,6 +1,12 @@
 package com.market.temues.ui.product
 
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import android.view.LayoutInflater
 import android.view.View
@@ -49,20 +55,80 @@ class ProductDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observarProducto()
         observarEstadoFavorito()
+        observarEventos()
 
-        binding.btnBuyNow.setOnClickListener {
-            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
-            findNavController().navigate(R.id.action_productDetail_to_cart)
+        binding.btnBuyNow.setOnClickListener { viewModel.onBuyNowClicked() }
+        binding.btnAddCart.setOnClickListener { viewModel.onAddToCartClicked() }
+        binding.btnFavorite.setOnClickListener { viewModel.onFavoriteClicked() }
+        binding.btnMessageSeller.setOnClickListener { viewModel.onChatClicked() }
+    }
+
+    private fun observarEventos() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is ProductDetailEvent.ToggleFavorite -> {
+                            val mensaje = if (event.isFavorite) {
+                                "Agregado a favoritos"
+                            } else {
+                                "Eliminado de favoritos"
+                            }
+                            mostrarMensajeFavorito(mensaje, event.isFavorite)
+                        }
+                        is ProductDetailEvent.OpenChat -> {
+                            findNavController().navigate(
+                                R.id.action_productDetail_to_chatDetail,
+                                Bundle().apply {
+                                    putString("sellerId", event.sellerId)
+                                    putString("productId", event.productId)
+                                }
+                            )
+                        }
+                        is ProductDetailEvent.AddToCart -> {
+                            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
+                            findNavController().navigate(R.id.action_productDetail_to_cart)
+                        }
+                        is ProductDetailEvent.BuyNow -> {
+                            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
+                            findNavController().navigate(
+                                R.id.action_productDetail_to_checkout,
+                                Bundle().apply { putString("productId", event.productId) }
+                            )
+                        }
+                    }
+                }
+            }
         }
-        binding.btnAddCart.setOnClickListener {
-            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
-            findNavController().navigate(R.id.action_productDetail_to_cart)
+    }
+
+    private fun mostrarMensajeFavorito(mensaje: String, agregado: Boolean) {
+        val contenedor = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(28, 18, 28, 18)
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 42f
+                setColor(requireContext().getColor(if (agregado) R.color.temues_green else R.color.temues_navy))
+            }
+            elevation = 10f
         }
-        binding.btnFavorite.setOnClickListener {
-            viewModel.alternarFavorito()
+
+        val texto = TextView(requireContext()).apply {
+            text = "${if (agregado) "❤" else "♡"}  $mensaje"
+            setTextColor(Color.WHITE)
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
         }
-        binding.btnMessageSeller.setOnClickListener {
-            findNavController().navigate(R.id.chatDetailFragment)
+
+        contenedor.addView(texto)
+
+        Toast(requireContext()).apply {
+            duration = Toast.LENGTH_SHORT
+            view = contenedor
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 120)
+            show()
         }
     }
 

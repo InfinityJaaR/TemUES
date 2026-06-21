@@ -115,4 +115,8 @@
     <string name="detalle_orden_titulo">Detalle del pedido</string>
     <string name="detalle_articulos">Artículos del pedido</string>
     <string name="orden_codigo">Código de recogida</string>
+
+    <!-- Productos -->
+    <string name="product_price_format">$%1$.2f</string>
+    <string name="product_card_meta">%1$s · %2$s</string>
 </resources>

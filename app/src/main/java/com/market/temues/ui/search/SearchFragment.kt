@@ -1,26 +1,28 @@
 package com.market.temues.ui.search
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.GridLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
 import com.market.temues.data.remote.storage.StorageDataSource
+import com.market.temues.databinding.ItemProductCardBinding
 import com.market.temues.databinding.PantallaBusquedaBinding
 import com.market.temues.model.Product
+import com.market.temues.ui.common.ProductAdapter
 import com.market.temues.ui.common.ProductListUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ class SearchFragment : Fragment() {
     private var _binding: PantallaBusquedaBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModels()
+    private lateinit var productAdapter: ProductAdapter
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -45,15 +48,40 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configurarListaProductos()
         configurarBusquedaYCategorias()
         observarEstado()
         binding.actualizarBusqueda.setOnRefreshListener { viewModel.cargarProductos() }
         viewModel.cargarProductos()
     }
 
+    private fun configurarListaProductos() {
+        productAdapter = ProductAdapter(
+            loadImage = ::loadProductImage,
+            onProductClick = { producto ->
+                findNavController().navigate(
+                    R.id.action_search_to_productDetail,
+                    Bundle().apply { putString("productId", producto.id) }
+                )
+            }
+        )
+        binding.listaProductosBusqueda.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.listaProductosBusqueda.adapter = productAdapter
+    }
+
     private fun configurarBusquedaYCategorias() {
         marcarCategoriaSeleccionada(binding.chipBusquedaTodo)
-        binding.inputBusquedaProducto.doAfterTextChanged { viewModel.buscar(it?.toString().orEmpty()) }
+        binding.inputBusquedaProducto.setOnEditorActionListener { textView, actionId, event ->
+            val esAccionBuscar = actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
+            val esEnter = event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP
+            if (esAccionBuscar || esEnter) {
+                viewModel.buscar(textView.text?.toString().orEmpty())
+                binding.inputBusquedaProducto.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
         binding.chipBusquedaTodo.setOnClickListener { seleccionarCategoria("", binding.chipBusquedaTodo) }
         binding.chipBusquedaElectronica.setOnClickListener { seleccionarCategoria("electronica", binding.chipBusquedaElectronica) }
         binding.chipBusquedaRopa.setOnClickListener { seleccionarCategoria("ropa", binding.chipBusquedaRopa) }
@@ -97,6 +125,9 @@ class SearchFragment : Fragment() {
         binding.animacionCargaBusqueda.isVisible = false
         binding.actualizarBusqueda.isRefreshing = false
         binding.txtEstadoBusqueda.text = mensaje
+        Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
+            .setAction("Reintentar") { viewModel.cargarProductos() }
+            .show()
     }
 
     private fun seleccionarCategoria(categoriaId: String, chipSeleccionado: TextView) {
@@ -120,47 +151,25 @@ class SearchFragment : Fragment() {
     }
 
     private fun renderProductos(productos: List<Product>, emptyMessage: String = "No hay productos que coincidan con tu búsqueda o categoría.") {
-        binding.gridProductosBusqueda.removeAllViews()
         binding.txtEstadoBusqueda.text = if (productos.isEmpty()) {
             emptyMessage
         } else {
             "${productos.size} productos encontrados desde Firestore."
         }
-
-        productos.forEach { producto ->
-            val card = layoutInflater.inflate(R.layout.item_product_card, binding.gridProductosBusqueda, false) as LinearLayout
-            val productImage = card.findViewById<ImageView>(R.id.img_product)
-            card.findViewById<TextView>(R.id.txt_product_name).text = producto.name
-            card.findViewById<TextView>(R.id.txt_product_meta).text = "${producto.location} · ${producto.condition}"
-            card.findViewById<TextView>(R.id.txt_product_price).text = "$%.2f".format(producto.price)
-            loadProductImage(producto.images.firstOrNull(), productImage)
-            card.setOnClickListener {
-                findNavController().navigate(
-                    R.id.action_search_to_productDetail,
-                    Bundle().apply { putString("productId", producto.id) }
-                )
-            }
-            card.layoutParams = GridLayout.LayoutParams().apply {
-                width = 0
-                height = ViewGroup.LayoutParams.WRAP_CONTENT
-                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                setMargins(8, 8, 8, 8)
-            }
-            binding.gridProductosBusqueda.addView(card)
-        }
+        productAdapter.submitList(productos)
     }
 
-    private fun loadProductImage(path: String?, imageView: ImageView) {
+    private fun loadProductImage(path: String?, itemBinding: ItemProductCardBinding) {
         if (path.isNullOrBlank()) return
 
         viewLifecycleOwner.lifecycleScope.launch {
             storageDataSource.getImageUrl(path).collect { result ->
                 result.getOrNull()?.let { imageUrl ->
-                    Glide.with(imageView)
+                    Glide.with(itemBinding.imgProduct)
                         .load(imageUrl)
                         .placeholder(R.drawable.bg_soft_card)
                         .error(R.drawable.bg_soft_card)
-                        .into(imageView)
+                        .into(itemBinding.imgProduct)
                 }
             }
         }
