@@ -42,41 +42,6 @@
                 android:textSize="15sp" />
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Buscar audífonos, comida, ropa..."
-            app:startIconDrawable="@drawable/ic_search">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_product_search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView android:id="@+id/chip_all" style="@style/TemUESChip" android:text="Todo" />
-                <TextView android:id="@+id/chip_electronics" style="@style/TemUESChip" android:text="Electrónica" />
-                <TextView android:id="@+id/chip_clothes" style="@style/TemUESChip" android:text="Ropa" />
-                <TextView android:id="@+id/chip_home" style="@style/TemUESChip" android:text="Hogar" />
-                <TextView android:id="@+id/chip_services" style="@style/TemUESChip" android:text="@string/home_categories_more" />
-            </LinearLayout>
-        </HorizontalScrollView>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

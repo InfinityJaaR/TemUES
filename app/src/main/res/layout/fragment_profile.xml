@@ -107,6 +107,15 @@
             app:icon="@android:drawable/ic_menu_recent_history" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_load_products"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Cargar 70 productos"
+            app:icon="@android:drawable/ic_input_add" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_admin_panel"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="match_parent"
