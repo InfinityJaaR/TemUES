@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Productos rankeados por relevancia, ubicación de entrega y actividad reciente del campus."
+                android:text="Descubre ofertas de estudiantes, encuentra lo que necesitas y conecta fácil dentro de la comunidad UES."
                 android:textColor="@color/white"
                 android:textSize="15sp" />
         </LinearLayout>

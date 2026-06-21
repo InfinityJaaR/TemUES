@@ -26,6 +26,7 @@ import com.market.temues.model.Category
 import com.market.temues.model.Product
 import com.market.temues.ui.common.ProductAdapter
 import com.market.temues.ui.common.ProductListUiState
+import com.market.temues.utils.NetworkUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,13 +56,23 @@ class HomeFragment : Fragment() {
         configurarBusquedaYCategorias()
         observarEstado()
         observarCategorias()
-        binding.actualizarInicio.setOnRefreshListener { viewModel.cargarProductos(forzarRecarga = true) }
-        viewModel.cargarProductos()
+        binding.actualizarInicio.setOnRefreshListener { cargarProductosSiHayConexion(forzarRecarga = true) }
+        cargarProductosSiHayConexion()
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.actualizarRanking()
+    }
+
+    private fun cargarProductosSiHayConexion(forzarRecarga: Boolean = false) {
+        if (!NetworkUtils.isOnline(requireContext())) {
+            binding.actualizarInicio.isRefreshing = false
+            binding.animacionCargaInicio.isVisible = false
+            Snackbar.make(binding.root, "Sin conexión a internet", Snackbar.LENGTH_LONG).show()
+            return
+        }
+        viewModel.cargarProductos(forzarRecarga)
     }
 
     private fun configurarListaProductos() {
@@ -188,7 +199,7 @@ class HomeFragment : Fragment() {
     private fun mostrarError(mensaje: String) {
         ocultarCargando()
         Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
-            .setAction(R.string.retry) { viewModel.cargarProductos(forzarRecarga = true) }
+            .setAction(R.string.retry) { cargarProductosSiHayConexion(forzarRecarga = true) }
             .show()
     }
 

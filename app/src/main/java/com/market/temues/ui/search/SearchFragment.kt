@@ -26,6 +26,7 @@ import com.market.temues.model.Category
 import com.market.temues.model.Product
 import com.market.temues.ui.common.ProductAdapter
 import com.market.temues.ui.common.ProductListUiState
+import com.market.temues.utils.NetworkUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,7 +56,17 @@ class SearchFragment : Fragment() {
         configurarBusquedaYCategorias()
         observarEstado()
         observarCategorias()
-        binding.actualizarBusqueda.setOnRefreshListener { viewModel.cargarProductos() }
+        binding.actualizarBusqueda.setOnRefreshListener { cargarProductosSiHayConexion() }
+        cargarProductosSiHayConexion()
+    }
+
+    private fun cargarProductosSiHayConexion() {
+        if (!NetworkUtils.isOnline(requireContext())) {
+            binding.actualizarBusqueda.isRefreshing = false
+            binding.animacionCargaBusqueda.isVisible = false
+            Snackbar.make(binding.root, "Sin conexión a internet", Snackbar.LENGTH_LONG).show()
+            return
+        }
         viewModel.cargarProductos()
     }
 
@@ -79,7 +90,11 @@ class SearchFragment : Fragment() {
             val esAccionBuscar = actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
             val esEnter = event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP
             if (esAccionBuscar || esEnter) {
-                viewModel.buscar(textView.text?.toString().orEmpty())
+                if (NetworkUtils.isOnline(requireContext())) {
+                    viewModel.buscar(textView.text?.toString().orEmpty())
+                } else {
+                    Snackbar.make(binding.root, "Sin conexión a internet", Snackbar.LENGTH_LONG).show()
+                }
                 binding.inputBusquedaProducto.clearFocus()
                 true
             } else {
@@ -169,11 +184,15 @@ class SearchFragment : Fragment() {
         binding.actualizarBusqueda.isRefreshing = false
         binding.txtEstadoBusqueda.text = mensaje
         Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
-            .setAction(R.string.retry) { viewModel.cargarProductos() }
+            .setAction(R.string.retry) { cargarProductosSiHayConexion() }
             .show()
     }
 
     private fun seleccionarCategoria(categoriaId: String, chipSeleccionado: TextView) {
+        if (!NetworkUtils.isOnline(requireContext())) {
+            Snackbar.make(binding.root, "Sin conexión a internet", Snackbar.LENGTH_LONG).show()
+            return
+        }
         marcarCategoriaSeleccionada(chipSeleccionado)
         if (chipSeleccionado != binding.chipBusquedaServicios) {
             binding.chipBusquedaServicios.text = getString(R.string.home_categories_more)

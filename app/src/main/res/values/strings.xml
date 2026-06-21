@@ -137,4 +137,5 @@
     <string name="product_category_format">Categoría: %1$s</string>
     <string name="home_categories_more">Otros ▾</string>
     <string name="seller_phone_format">Tel: %1$s</string>
+    <string name="error_no_internet">Sin conexión a internet</string>
 </resources>
