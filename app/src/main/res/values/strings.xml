@@ -119,4 +119,22 @@
     <!-- Productos -->
     <string name="product_price_format">$%1$.2f</string>
     <string name="product_card_meta">%1$s · %2$s</string>
+    <string name="product_image_description">Imagen del producto</string>
+    <string name="product_name_placeholder">Nombre del producto</string>
+    <string name="product_meta_placeholder">Ubicación · condición</string>
+    <string name="product_price_placeholder">$0.00</string>
+    <string name="products_loading_firestore">Cargando productos desde Firestore...</string>
+    <string name="products_empty_filtered">No hay productos que coincidan con tu búsqueda o categoría.</string>
+    <string name="products_loaded_count">%1$d productos cargados desde Firestore.</string>
+    <string name="products_found_count">%1$d productos encontrados.</string>
+    <string name="retry">Reintentar</string>
+    <string name="favorite_added">Agregado a favoritos</string>
+    <string name="favorite_removed">Eliminado de favoritos</string>
+    <string name="seller_without_name">Vendedor sin nombre</string>
+    <string name="product_place_format">Lugar: %1$s</string>
+    <string name="product_condition_format">Condición: %1$s</string>
+    <string name="product_delivery_point_format">Punto de entrega: %1$s</string>
+    <string name="product_category_format">Categoría: %1$s</string>
+    <string name="home_categories_more">Otros ▾</string>
+    <string name="seller_phone_format">Tel: %1$s</string>
 </resources>

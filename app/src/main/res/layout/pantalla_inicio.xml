@@ -53,7 +53,9 @@
                 android:id="@+id/input_product_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <HorizontalScrollView
@@ -71,7 +73,7 @@
                 <TextView android:id="@+id/chip_electronics" style="@style/TemUESChip" android:text="Electrónica" />
                 <TextView android:id="@+id/chip_clothes" style="@style/TemUESChip" android:text="Ropa" />
                 <TextView android:id="@+id/chip_home" style="@style/TemUESChip" android:text="Hogar" />
-                <TextView android:id="@+id/chip_services" style="@style/TemUESChip" android:text="Servicios" />
+                <TextView android:id="@+id/chip_services" style="@style/TemUESChip" android:text="@string/home_categories_more" />
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -102,31 +104,6 @@
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/animacion_carga" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/bg_code_box"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Estados de carga previstos"
-                android:textColor="@color/temues_green"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/txt_products_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Cargando productos..."
-                android:textColor="@color/temues_text"
-                android:textSize="14sp" />
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

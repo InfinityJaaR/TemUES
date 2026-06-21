@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.market.temues.data.remote.product.ProductRemoteDataSource
+import com.market.temues.data.remote.user.UserRemoteDataSource
 import com.market.temues.data.repository.FavoritesRepository
 import com.market.temues.model.Product
+import com.market.temues.model.User
 import com.market.temues.ui.common.ProductDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -31,6 +33,7 @@ sealed class ProductDetailEvent {
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productRemoteDataSource: ProductRemoteDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource,
     private val favoritesRepository: FavoritesRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
@@ -42,6 +45,11 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _product = MutableStateFlow<Product?>(null)
     val product: StateFlow<Product?> = _product.asStateFlow()
+
+    private val _seller = MutableStateFlow<User?>(null)
+    val seller: StateFlow<User?> = _seller.asStateFlow()
+
+    private var sellerIdCargado: String = ""
 
     private val _events = Channel<ProductDetailEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
@@ -105,9 +113,21 @@ class ProductDetailViewModel @Inject constructor(
                 }
                 .collect { product ->
                     _product.value = product
+                    product?.sellerId?.takeIf { it.isNotBlank() && it != sellerIdCargado }?.let { sellerId ->
+                        cargarVendedor(sellerId)
+                    }
                     _uiState.value = product?.let { ProductDetailUiState.Success(it) }
                         ?: ProductDetailUiState.Empty("El producto ya no está disponible.")
                 }
+        }
+    }
+
+    private fun cargarVendedor(sellerId: String) {
+        sellerIdCargado = sellerId
+        viewModelScope.launch {
+            userRemoteDataSource.getById(sellerId)
+                .catch { _seller.value = null }
+                .collect { user -> _seller.value = user }
         }
     }
 }

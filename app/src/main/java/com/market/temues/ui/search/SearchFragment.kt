@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ import com.market.temues.R
 import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.databinding.ItemProductCardBinding
 import com.market.temues.databinding.PantallaBusquedaBinding
+import com.market.temues.model.Category
 import com.market.temues.model.Product
 import com.market.temues.ui.common.ProductAdapter
 import com.market.temues.ui.common.ProductListUiState
@@ -34,6 +36,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var productAdapter: ProductAdapter
+    private var categoriasFirebase: List<Category> = emptyList()
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -51,6 +54,7 @@ class SearchFragment : Fragment() {
         configurarListaProductos()
         configurarBusquedaYCategorias()
         observarEstado()
+        observarCategorias()
         binding.actualizarBusqueda.setOnRefreshListener { viewModel.cargarProductos() }
         viewModel.cargarProductos()
     }
@@ -86,7 +90,46 @@ class SearchFragment : Fragment() {
         binding.chipBusquedaElectronica.setOnClickListener { seleccionarCategoria("electronica", binding.chipBusquedaElectronica) }
         binding.chipBusquedaRopa.setOnClickListener { seleccionarCategoria("ropa", binding.chipBusquedaRopa) }
         binding.chipBusquedaHogar.setOnClickListener { seleccionarCategoria("hogar", binding.chipBusquedaHogar) }
-        binding.chipBusquedaServicios.setOnClickListener { seleccionarCategoria("servicios", binding.chipBusquedaServicios) }
+        binding.chipBusquedaServicios.setOnClickListener { mostrarMenuCategorias(binding.chipBusquedaServicios) }
+    }
+
+    private fun observarCategorias() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.categories.collect { categorias ->
+                    categoriasFirebase = categorias
+                }
+            }
+        }
+    }
+
+    private fun mostrarMenuCategorias(anchor: TextView) {
+        val categoriasMenu = categoriasFirebase
+            .filter { it.id.isNotBlank() }
+            .sortedBy { it.order }
+
+        if (categoriasMenu.isEmpty()) {
+            seleccionarCategoria("otros", binding.chipBusquedaServicios)
+            return
+        }
+
+        val popup = PopupMenu(requireContext(), anchor)
+        categoriasMenu.forEachIndexed { index, category ->
+            popup.menu.add(0, index, index, category.name.ifBlank { category.id })
+        }
+        popup.setOnMenuItemClickListener { item ->
+            categoriasMenu.getOrNull(item.itemId)?.let { category ->
+                if (category.id.equals("otros", ignoreCase = true)) {
+                    seleccionarCategoria("", binding.chipBusquedaTodo)
+                    binding.chipBusquedaServicios.text = getString(R.string.home_categories_more)
+                } else {
+                    seleccionarCategoria(category.id, binding.chipBusquedaServicios)
+                    binding.chipBusquedaServicios.text = category.name.ifBlank { category.id }
+                }
+            }
+            true
+        }
+        popup.show()
     }
 
     private fun observarEstado() {
@@ -113,7 +156,7 @@ class SearchFragment : Fragment() {
     private fun mostrarCargando() {
         binding.animacionCargaBusqueda.isVisible = true
         binding.actualizarBusqueda.isRefreshing = true
-        binding.txtEstadoBusqueda.text = "Cargando productos desde Firestore..."
+        binding.txtEstadoBusqueda.text = getString(R.string.products_loading_firestore)
     }
 
     private fun ocultarCargando() {
@@ -126,12 +169,15 @@ class SearchFragment : Fragment() {
         binding.actualizarBusqueda.isRefreshing = false
         binding.txtEstadoBusqueda.text = mensaje
         Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
-            .setAction("Reintentar") { viewModel.cargarProductos() }
+            .setAction(R.string.retry) { viewModel.cargarProductos() }
             .show()
     }
 
     private fun seleccionarCategoria(categoriaId: String, chipSeleccionado: TextView) {
         marcarCategoriaSeleccionada(chipSeleccionado)
+        if (chipSeleccionado != binding.chipBusquedaServicios) {
+            binding.chipBusquedaServicios.text = getString(R.string.home_categories_more)
+        }
         viewModel.seleccionarCategoria(categoriaId)
     }
 
@@ -150,13 +196,22 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun renderProductos(productos: List<Product>, emptyMessage: String = "No hay productos que coincidan con tu búsqueda o categoría.") {
+    private fun renderProductos(productos: List<Product>, emptyMessage: String = getString(R.string.products_empty_filtered)) {
         binding.txtEstadoBusqueda.text = if (productos.isEmpty()) {
             emptyMessage
         } else {
-            "${productos.size} productos encontrados desde Firestore."
+            getString(R.string.products_found_count, productos.size)
         }
+        ajustarAlturaLista(productos.size)
         productAdapter.submitList(productos)
+    }
+
+    private fun ajustarAlturaLista(cantidadProductos: Int) {
+        val filas = ((cantidadProductos + 1) / 2).coerceAtLeast(1)
+        val alturaPorFila = (330 * resources.displayMetrics.density).toInt()
+        binding.listaProductosBusqueda.layoutParams = binding.listaProductosBusqueda.layoutParams.apply {
+            height = filas * alturaPorFila
+        }
     }
 
     private fun loadProductImage(path: String?, itemBinding: ItemProductCardBinding) {

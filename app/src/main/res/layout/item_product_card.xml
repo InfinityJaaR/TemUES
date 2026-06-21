@@ -1,31 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_card"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp"
+    app:strokeColor="@color/temues_bg"
+    app:strokeWidth="1dp">
 
-    <ImageView
-        android:id="@+id/img_product"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@drawable/bg_soft_card"
-        android:contentDescription="Imagen del producto"
-        android:scaleType="centerCrop" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
 
-    <TextView
-        android:id="@+id/txt_product_name"
-        style="@style/TemUESProductName"
-        android:text="Nombre del producto" />
+        <ImageView
+            android:id="@+id/img_product"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@drawable/bg_soft_card"
+            android:contentDescription="@string/product_image_description"
+            android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/txt_product_meta"
-        style="@style/TemUESProductMeta"
-        android:text="Ubicación · condición" />
+        <TextView
+            android:id="@+id/txt_product_name"
+            style="@style/TemUESProductName"
+            android:text="@string/product_name_placeholder" />
 
-    <TextView
-        android:id="@+id/txt_product_price"
-        style="@style/TemUESProductPrice"
-        android:text="$0.00" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/txt_product_meta"
+            style="@style/TemUESProductMeta"
+            android:text="@string/product_meta_placeholder" />
+
+        <TextView
+            android:id="@+id/txt_product_price"
+            style="@style/TemUESProductPrice"
+            android:text="@string/product_price_placeholder" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -23,6 +23,7 @@ import com.market.temues.R
 import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.databinding.PantallaDetalleProductoBinding
 import com.market.temues.model.Product
+import com.market.temues.model.User
 import com.market.temues.ui.cart.CarritoViewModel
 import com.market.temues.ui.common.ProductDetailUiState
 import com.google.android.material.snackbar.Snackbar
@@ -54,6 +55,7 @@ class ProductDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observarProducto()
+        observarVendedor()
         observarEstadoFavorito()
         observarEventos()
 
@@ -70,9 +72,9 @@ class ProductDetailFragment : Fragment() {
                     when (event) {
                         is ProductDetailEvent.ToggleFavorite -> {
                             val mensaje = if (event.isFavorite) {
-                                "Agregado a favoritos"
+                                getString(R.string.favorite_added)
                             } else {
-                                "Eliminado de favoritos"
+                                getString(R.string.favorite_removed)
                             }
                             mostrarMensajeFavorito(mensaje, event.isFavorite)
                         }
@@ -132,6 +134,27 @@ class ProductDetailFragment : Fragment() {
         }
     }
 
+    private fun observarVendedor() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.seller.collect { seller ->
+                    renderSeller(seller)
+                }
+            }
+        }
+    }
+
+    private fun renderSeller(seller: User?) {
+        if (seller == null) return
+
+        binding.txtSeller.text = seller.name.ifBlank { productoActual?.sellerName ?: getString(R.string.seller_without_name) }
+        binding.txtSellerPhone.isVisible = seller.phone.isNotBlank()
+        binding.txtSellerPhone.text = getString(R.string.seller_phone_format, seller.phone)
+        binding.txtSellerBio.isVisible = seller.bio.isNotBlank()
+        binding.txtSellerBio.text = seller.bio
+        loadSellerPhoto(seller.photoUrl)
+    }
+
     private fun observarEstadoFavorito() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -172,17 +195,54 @@ class ProductDetailFragment : Fragment() {
 
     private fun renderProduct(product: Product) {
         productoActual = product
-        val lugarEntrega = product.location.ifBlank { "Coordinar por chat" }
+        val lugarEntrega = product.location.ifBlank { getString(R.string.checkout_coordinar_chat) }
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)
         binding.txtProductDescription.text = product.description
-        binding.txtSeller.text = product.sellerName.ifBlank { "Vendedor sin nombre" }
-        binding.txtLocation.text = "Lugar: $lugarEntrega"
-        binding.txtCondition.text = "Condición: ${product.condition.replaceFirstChar { it.uppercase() }}"
-        binding.txtDeliveryPoint.text = "Punto de entrega: $lugarEntrega"
-        binding.txtCategory.text = "Categoría: ${product.categoryName}"
+        binding.txtSeller.text = product.sellerName.ifBlank { getString(R.string.seller_without_name) }
+        binding.txtSellerPhone.isVisible = false
+        binding.txtSellerBio.isVisible = false
+        binding.imgSellerPhoto.isVisible = false
+        binding.txtLocation.text = getString(R.string.product_place_format, lugarEntrega)
+        binding.txtCondition.text = getString(R.string.product_condition_format, product.condition.replaceFirstChar { it.uppercase() })
+        binding.txtDeliveryPoint.text = getString(R.string.product_delivery_point_format, lugarEntrega)
+        binding.txtCategory.text = getString(R.string.product_category_format, product.categoryName)
         binding.imgSellerPhoto.setImageResource(R.drawable.bg_temues_gradient)
         loadProductImage(product.images.firstOrNull())
+    }
+
+    private fun loadSellerPhoto(path: String?) {
+        if (path.isNullOrBlank()) {
+            binding.imgSellerPhoto.isVisible = false
+            return
+        }
+
+        binding.imgSellerPhoto.isVisible = true
+
+        if (path.startsWith("http://") || path.startsWith("https://")) {
+            Glide.with(binding.imgSellerPhoto)
+                .load(path)
+                .placeholder(R.drawable.bg_temues_gradient)
+                .error(R.drawable.bg_temues_gradient)
+                .circleCrop()
+                .into(binding.imgSellerPhoto)
+            return
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            storageDataSource.getImageUrl(path).collect { result ->
+                result.getOrNull()?.let { imageUrl ->
+                    Glide.with(binding.imgSellerPhoto)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.bg_temues_gradient)
+                        .error(R.drawable.bg_temues_gradient)
+                        .circleCrop()
+                        .into(binding.imgSellerPhoto)
+                } ?: run {
+                    binding.imgSellerPhoto.isVisible = false
+                }
+            }
+        }
     }
 
     private fun loadProductImage(path: String?) {

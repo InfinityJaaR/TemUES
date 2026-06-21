@@ -64,7 +64,7 @@
                     <TextView android:id="@+id/chip_busqueda_electronica" style="@style/TemUESChip" android:text="Electrónica" />
                     <TextView android:id="@+id/chip_busqueda_ropa" style="@style/TemUESChip" android:text="Ropa" />
                     <TextView android:id="@+id/chip_busqueda_hogar" style="@style/TemUESChip" android:text="Hogar" />
-                    <TextView android:id="@+id/chip_busqueda_servicios" style="@style/TemUESChip" android:text="Servicios" />
+                    <TextView android:id="@+id/chip_busqueda_servicios" style="@style/TemUESChip" android:text="@string/home_categories_more" />
                 </LinearLayout>
             </HorizontalScrollView>
 
