@@ -29,6 +29,7 @@ hiltNavigation = "1.1.0"
 playServicesAuth = "20.7.0"
 facebookLogin = "18.2.3"
 
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }

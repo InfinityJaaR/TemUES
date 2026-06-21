@@ -19,6 +19,12 @@
             app:popUpToInclusive="true" />
 
         <action
+            android:id="@+id/action_login_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
             android:id="@+id/action_login_to_register"
             app:destination="@id/registerFragment" />
 
@@ -36,6 +42,12 @@
         <action
             android:id="@+id/action_register_to_home"
             app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_register_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
 
@@ -120,17 +132,67 @@
         tools:layout="@layout/pantalla_perfil">
 
         <action
+            android:id="@+id/action_profile_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment" />
+
+        <action
             android:id="@+id/action_profile_to_login"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_profile_to_sellerCatalog"
+            app:destination="@id/sellerCatalogFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_favorites"
+            app:destination="@id/favoritesFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_editProfile"
+            app:destination="@id/editProfileFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_historial"
+            app:destination="@id/historialFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/sellerCatalogFragment"
+        android:name="com.market.temues.ui.seller.SellerCatalogFragment"
+        android:label="@string/seller_catalog_title"
+        tools:layout="@layout/fragment_seller_catalog">
+
+        <action
+            android:id="@+id/action_sellerCatalog_to_addEditProduct"
+            app:destination="@id/addEditProductFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.market.temues.ui.seller.AddEditProductFragment"
+        android:label="@string/add_edit_product_title"
+        tools:layout="@layout/fragment_add_edit_product">
+        <argument
+            android:name="productId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.market.temues.ui.profile.EditProfileFragment"
+        android:label="@string/edit_profile_title" />
 
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.market.temues.ui.product.ProductDetailFragment"
         android:label="@string/product_detail_title"
         tools:layout="@layout/pantalla_detalle_producto">
+        <argument
+            android:name="productId"
+            app:argType="string" />
 
         <action
             android:id="@+id/action_productDetail_to_cart"
@@ -150,7 +212,17 @@
         <action
             android:id="@+id/action_cart_to_paymentMethod"
             app:destination="@id/paymentMethodFragment" />
+
+        <action
+            android:id="@+id/action_cart_to_checkout"
+            app:destination="@id/checkoutFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.market.temues.ui.checkout.PagoFragment"
+        android:label="@string/checkout_titulo"
+        tools:layout="@layout/pantalla_checkout" />
 
     <fragment
         android:id="@+id/paymentMethodFragment"
@@ -192,9 +264,49 @@
         tools:layout="@layout/pantalla_compra_exitosa" />
 
     <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.market.temues.ui.admin.AdminDashboardFragment"
+        android:label="@string/admin_dashboard_title"
+        tools:layout="@layout/fragment_admin_dashboard" />
+
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.market.temues.ui.admin.CategoryListFragment"
+        android:label="@string/admin_categories_title"
+        tools:layout="@layout/fragment_category_list" />
+
+    <fragment
+        android:id="@+id/adminCreateCategoryFragment"
+        android:name="com.market.temues.ui.admin.AdminCreateCategoryFragment"
+        android:label="@string/admin_create_category_title"
+        tools:layout="@layout/fragment_admin_create_category" />
+
+    <fragment
         android:id="@+id/sellerSaleDetailFragment"
         android:name="com.market.temues.ui.seller.SellerSaleDetailFragment"
         android:label="@string/seller_sale_title"
         tools:layout="@layout/pantalla_detalle_venta_vendedor" />
+
+    <fragment
+        android:id="@+id/historialFragment"
+        android:name="com.market.temues.ui.history.HistorialFragment"
+        android:label="@string/historial_titulo"
+        tools:layout="@layout/pantalla_historial_compras">
+
+        <action
+            android:id="@+id/action_historial_to_detalleOrden"
+            app:destination="@id/detalleOrdenFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detalleOrdenFragment"
+        android:name="com.market.temues.ui.history.DetalleOrdenFragment"
+        android:label="@string/detalle_orden_titulo"
+        tools:layout="@layout/pantalla_detalle_orden">
+
+        <argument
+            android:name="ordenId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

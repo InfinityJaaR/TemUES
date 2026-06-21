@@ -17,7 +17,9 @@ import com.market.temues.R
 import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.databinding.PantallaDetalleProductoBinding
 import com.market.temues.model.Product
+import com.market.temues.ui.cart.CarritoViewModel
 import com.market.temues.ui.common.ProductDetailUiState
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,8 +29,10 @@ class ProductDetailFragment : Fragment() {
     private var _binding: PantallaDetalleProductoBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ProductDetailViewModel by viewModels()
+    private val carritoViewModel: CarritoViewModel by viewModels()
 
     private var esFavoritoSeleccionado = false
+    private var productoActual: com.market.temues.model.Product? = null
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -44,17 +48,35 @@ class ProductDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observarProducto()
+        observarEstadoFavorito()
+
         binding.btnBuyNow.setOnClickListener {
+            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnAddCart.setOnClickListener {
+            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnFavorite.setOnClickListener {
-            alternarFavoritoVisual()
+            viewModel.alternarFavorito()
         }
         binding.btnMessageSeller.setOnClickListener {
             findNavController().navigate(R.id.chatDetailFragment)
+        }
+    }
+
+    private fun observarEstadoFavorito() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.esFavorito.collect { favorito ->
+                    esFavoritoSeleccionado = favorito
+                    val colorFavorito = requireContext().getColor(
+                        if (favorito) R.color.temues_red else R.color.temues_text_muted
+                    )
+                    binding.btnFavorite.iconTint = android.content.res.ColorStateList.valueOf(colorFavorito)
+                }
+            }
         }
     }
 
@@ -82,17 +104,8 @@ class ProductDetailFragment : Fragment() {
         binding.txtProductDescription.isVisible = false
     }
 
-    private fun alternarFavoritoVisual() {
-        esFavoritoSeleccionado = !esFavoritoSeleccionado
-        val colorFavorito = requireContext().getColor(
-            if (esFavoritoSeleccionado) R.color.temues_red else R.color.temues_text_muted
-        )
-        binding.btnFavorite.iconTint = android.content.res.ColorStateList.valueOf(colorFavorito)
-        val mensaje = if (esFavoritoSeleccionado) "Agregado a Favoritos" else "Eliminado de Favoritos"
-        Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
-    }
-
     private fun renderProduct(product: Product) {
+        productoActual = product
         val lugarEntrega = product.location.ifBlank { "Coordinar por chat" }
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)
