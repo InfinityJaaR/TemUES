@@ -114,13 +114,55 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_profile_to_sellerCatalog"
+            app:destination="@id/sellerCatalogFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_favorites"
+            app:destination="@id/favoritesFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_editProfile"
+            app:destination="@id/editProfileFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/sellerCatalogFragment"
+        android:name="com.market.temues.ui.seller.SellerCatalogFragment"
+        android:label="@string/seller_catalog_title"
+        tools:layout="@layout/fragment_seller_catalog">
+
+        <action
+            android:id="@+id/action_sellerCatalog_to_addEditProduct"
+            app:destination="@id/addEditProductFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.market.temues.ui.seller.AddEditProductFragment"
+        android:label="@string/add_edit_product_title"
+        tools:layout="@layout/fragment_add_edit_product">
+        <argument
+            android:name="productId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.market.temues.ui.profile.EditProfileFragment"
+        android:label="@string/edit_profile_title" />
 
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.market.temues.ui.product.ProductDetailFragment"
         android:label="@string/product_detail_title"
         tools:layout="@layout/pantalla_detalle_producto">
+        <argument
+            android:name="productId"
+            app:argType="string" />
 
         <action
             android:id="@+id/action_productDetail_to_cart"
