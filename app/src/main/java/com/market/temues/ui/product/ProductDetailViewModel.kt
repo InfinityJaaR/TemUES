@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.market.temues.data.remote.chat.ChatRemoteDataSource
 import com.market.temues.data.remote.product.ProductRemoteDataSource
 import com.market.temues.data.repository.FavoritesRepository
 import com.market.temues.ui.common.ProductDetailUiState
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productRemoteDataSource: ProductRemoteDataSource,
+    private val chatRemoteDataSource: ChatRemoteDataSource,
     private val favoritesRepository: FavoritesRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
@@ -39,6 +41,28 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         cargarProducto()
+    }
+
+    private val _cargandoChat = MutableStateFlow(false)
+    val cargandoChat: StateFlow<Boolean> = _cargandoChat.asStateFlow()
+
+    fun esPropioProducto(): Boolean {
+        val producto = (uiState.value as? ProductDetailUiState.Success)?.product ?: return false
+        return producto.sellerId == userId
+    }
+
+    suspend fun crearOAbrirChat(): String {
+        val producto = (uiState.value as? ProductDetailUiState.Success)?.product ?: return ""
+        if (userId.isBlank() || producto.sellerId.isBlank()) return ""
+        if (userId == producto.sellerId) return ""
+        _cargandoChat.value = true
+        return try {
+            chatRemoteDataSource.createOrGet(userId, producto.sellerId, producto.id)
+        } catch (_: Exception) {
+            ""
+        } finally {
+            _cargandoChat.value = false
+        }
     }
 
     fun alternarFavorito() {

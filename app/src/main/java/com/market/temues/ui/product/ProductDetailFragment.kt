@@ -62,7 +62,21 @@ class ProductDetailFragment : Fragment() {
             viewModel.alternarFavorito()
         }
         binding.btnMessageSeller.setOnClickListener {
-            findNavController().navigate(R.id.chatDetailFragment)
+            binding.btnMessageSeller.isEnabled = false
+            lifecycleScope.launch {
+                val chatId = viewModel.crearOAbrirChat()
+                binding.btnMessageSeller.isEnabled = true
+                if (chatId.isNotBlank()) {
+                    val args = android.os.Bundle().apply { putString("chatId", chatId) }
+                    findNavController().navigate(R.id.chatDetailFragment, args)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "No se pudo abrir el chat",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
@@ -106,6 +120,7 @@ class ProductDetailFragment : Fragment() {
 
     private fun renderProduct(product: Product) {
         productoActual = product
+        binding.btnMessageSeller.isVisible = !viewModel.esPropioProducto()
         val lugarEntrega = product.location.ifBlank { "Coordinar por chat" }
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)

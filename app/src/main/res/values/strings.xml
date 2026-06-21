@@ -147,4 +147,12 @@
     <string name="chat_tu_etiqueta">Tú</string>
     <string name="chat_grabar_audio">Grabar audio</string>
     <string name="chat_permiso_audio">Se necesita permiso para grabar audio</string>
+    <string name="chat_notificacion_titulo_defecto">Nuevo mensaje</string>
+    <string name="chat_audio_enviado">🎵 Audio</string>
+    <string name="chat_grabando_indicador">● Grabando</string>
+    <string name="chat_audio_muy_corto">Mantén presionado para grabar</string>
+    <string name="chat_error_grabacion">Error al iniciar la grabación</string>
+    <string name="chat_error_envio_audio">Error al enviar el audio. Intenta de nuevo.</string>
+    <string name="chat_sin_telefono">El vendedor no ha registrado un número de teléfono</string>
+    <string name="chat_subiendo_audio">Enviando audio…</string>
 </resources>
