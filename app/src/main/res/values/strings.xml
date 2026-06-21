@@ -63,4 +63,12 @@
     <string name="seller_sale_title">Venta realizada</string>
     <string name="favorites_title">Favoritos</string>
     <string name="chat_detail_title">Chat</string>
+    <string name="chat_subtitulo">Coordina compras, entregas y ventas dentro del campus.</string>
+    <string name="chat_lista_vacia">No tienes conversaciones</string>
+    <string name="chat_input_hint">Escribe un mensaje…</string>
+    <string name="chat_enviar">Enviar</string>
+    <string name="chat_llamar">Llamar</string>
+    <string name="chat_tu_etiqueta">Tú</string>
+    <string name="chat_grabar_audio">Grabar audio</string>
+    <string name="chat_permiso_audio">Se necesita permiso para grabar audio</string>
 </resources>

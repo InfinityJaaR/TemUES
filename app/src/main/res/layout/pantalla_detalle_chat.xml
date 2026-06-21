@@ -6,6 +6,7 @@
     android:background="@color/temues_bg"
     android:orientation="vertical">
 
+    <!-- Encabezado con avatar, nombre y botón llamar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,112 +15,82 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <View
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_soft_card" />
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_soft_card">
 
-        <LinearLayout
+            <TextView
+                android:id="@+id/txt_inicial_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/temues_navy"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/txt_nombre_otro_usuario"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Carlos López"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Audífonos Bluetooth Pro"
-                android:textColor="@color/white"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <TextView
-            style="@style/TemUESChip"
-            android:text="Llamar" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_llamar"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/chat_llamar"
+            android:textColor="@color/white"
+            app:strokeColor="@color/white"
+            app:cornerRadius="18dp" />
     </LinearLayout>
 
-    <ScrollView
+    <!-- Animación de carga -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animacion_carga_detalle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:visibility="gone" />
+
+    <!-- Lista de mensajes -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_mensajes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp">
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:visibility="gone" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_card"
-                android:padding="12dp"
-                android:text="Hola, ¿sigue disponible?"
-                android:textColor="@color/temues_text" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="10:24"
-                android:textColor="@color/temues_text_muted"
-                android:textSize="11sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_code_box"
-                android:padding="12dp"
-                android:text="Sí, puedo entregar hoy en el campus."
-                android:textColor="@color/temues_text" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="4dp"
-                android:text="10:26 · visto"
-                android:textColor="@color/temues_text_muted"
-                android:textSize="11sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_card"
-                android:padding="12dp"
-                android:text="Perfecto, ¿en biblioteca central?"
-                android:textColor="@color/temues_text" />
-        </LinearLayout>
-    </ScrollView>
-
+    <!-- Input para escribir y enviar mensaje -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/temues_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="8dp">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Escribe un mensaje">
+            android:hint="@string/chat_input_hint"
+            app:boxCornerRadiusBottomEnd="18dp"
+            app:boxCornerRadiusBottomStart="18dp"
+            app:boxCornerRadiusTopEnd="18dp"
+            app:boxCornerRadiusTopStart="18dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_message"
+                android:id="@+id/input_mensaje"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine|textCapSentences"
@@ -127,11 +98,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_send_message"
+            android:id="@+id/btn_enviar_mensaje"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:layout_marginStart="8dp"
-            android:text="Enviar"
+            android:text="@string/chat_enviar"
             app:cornerRadius="18dp" />
     </LinearLayout>
+
 </LinearLayout>

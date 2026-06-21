@@ -101,7 +101,17 @@
         android:id="@+id/chatDetailFragment"
         android:name="com.market.temues.ui.chat.ChatDetailFragment"
         android:label="@string/chat_detail_title"
-        tools:layout="@layout/pantalla_detalle_chat" />
+        tools:layout="@layout/pantalla_detalle_chat">
+        <argument
+            android:name="chatId"
+            android:defaultValue="" />
+        <argument
+            android:name="otherUserId"
+            android:defaultValue="" />
+        <argument
+            android:name="productId"
+            android:defaultValue="" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
