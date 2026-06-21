@@ -32,6 +32,8 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var productAdapter: ProductAdapter
+    private var productosActuales: List<Product> = emptyList()
+    private var limiteVisible = PRODUCTOS_POR_CARGA
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -49,6 +51,7 @@ class HomeFragment : Fragment() {
         configurarListaProductos()
         observarEstado()
         binding.actualizarInicio.setOnRefreshListener { cargarProductosSiHayConexion(forzarRecarga = true) }
+        configurarCargaPorScroll()
         cargarProductosSiHayConexion()
     }
 
@@ -121,19 +124,33 @@ class HomeFragment : Fragment() {
     }
 
     private fun renderProducts(products: List<Product>, emptyMessage: String = getString(R.string.products_empty_filtered)) {
+        productosActuales = products
+        limiteVisible = PRODUCTOS_POR_CARGA
         if (products.isEmpty()) {
             Snackbar.make(binding.root, emptyMessage, Snackbar.LENGTH_SHORT).show()
         }
-        ajustarAlturaLista(products.size)
-        productAdapter.submitList(products)
+        mostrarProductosVisibles()
     }
 
-    private fun ajustarAlturaLista(cantidadProductos: Int) {
-        val filas = ((cantidadProductos + 1) / 2).coerceAtLeast(1)
-        val alturaPorFila = (330 * resources.displayMetrics.density).toInt()
-        binding.listaProductosInicio.layoutParams = binding.listaProductosInicio.layoutParams.apply {
-            height = filas * alturaPorFila
+    private fun configurarCargaPorScroll() {
+        binding.scrollInicio.setOnScrollChangeListener { view, _, scrollY, _, _ ->
+            val scrollView = view as androidx.core.widget.NestedScrollView
+            val contenido = scrollView.getChildAt(0)?.height ?: return@setOnScrollChangeListener
+            val finalVisible = scrollY + scrollView.height
+            if (finalVisible >= contenido - UMBRAL_SCROLL_PX) {
+                cargarSiguienteBloque()
+            }
         }
+    }
+
+    private fun cargarSiguienteBloque() {
+        if (limiteVisible >= productosActuales.size) return
+        limiteVisible = (limiteVisible + PRODUCTOS_POR_CARGA).coerceAtMost(productosActuales.size)
+        mostrarProductosVisibles()
+    }
+
+    private fun mostrarProductosVisibles() {
+        productAdapter.submitList(productosActuales.take(limiteVisible))
     }
 
     private fun loadProductImage(path: String?, itemBinding: ItemProductCardBinding) {
@@ -150,6 +167,11 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PRODUCTOS_POR_CARGA = 20
+        private const val UMBRAL_SCROLL_PX = 240
     }
 
     override fun onDestroyView() {

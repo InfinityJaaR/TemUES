@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity() {
             binding.bottomNavigation.inflateMenu(R.menu.bottom_nav_menu)
             val userTopLevel = setOf(
                 R.id.homeFragment,
-                R.id.searchFragment,
                 R.id.favoritesFragment,
                 R.id.chatFragment,
                 R.id.profileFragment

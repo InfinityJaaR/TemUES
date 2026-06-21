@@ -38,6 +38,8 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var productAdapter: ProductAdapter
     private var categoriasFirebase: List<Category> = emptyList()
+    private var productosActuales: List<Product> = emptyList()
+    private var limiteVisible = PRODUCTOS_POR_CARGA
 
     @Inject lateinit var storageDataSource: StorageDataSource
 
@@ -54,10 +56,44 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         configurarListaProductos()
         configurarBusquedaYCategorias()
+        configurarCargaPorScroll()
         observarEstado()
         observarCategorias()
         binding.actualizarBusqueda.setOnRefreshListener { cargarProductosSiHayConexion() }
+        binding.layoutBusquedaProducto.setEndIconOnClickListener { reiniciarBusqueda() }
         cargarProductosSiHayConexion()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val productosEnMemoria = viewModel.results.value
+        if (productosEnMemoria.isNotEmpty()) {
+            ocultarCargando()
+            renderProductos(productosEnMemoria)
+            return
+        }
+
+        when (val estado = viewModel.uiState.value) {
+            is ProductListUiState.Success -> {
+                ocultarCargando()
+                renderProductos(estado.products)
+            }
+            is ProductListUiState.Empty -> {
+                ocultarCargando()
+                renderProductos(emptyList(), estado.message)
+            }
+            is ProductListUiState.Error -> mostrarError(estado.message)
+            ProductListUiState.Loading -> cargarProductosSiHayConexion()
+        }
+    }
+
+    private fun reiniciarBusqueda() {
+        binding.inputBusquedaProducto.setText("")
+        binding.inputBusquedaProducto.clearFocus()
+        marcarCategoriaSeleccionada(binding.chipBusquedaTodo)
+        binding.chipBusquedaServicios.text = getString(R.string.home_categories_more)
+        viewModel.buscar("")
+        viewModel.seleccionarCategoria("")
     }
 
     private fun cargarProductosSiHayConexion() {
@@ -216,13 +252,37 @@ class SearchFragment : Fragment() {
     }
 
     private fun renderProductos(productos: List<Product>, emptyMessage: String = getString(R.string.products_empty_filtered)) {
+        productosActuales = productos
+        limiteVisible = PRODUCTOS_POR_CARGA
         binding.txtEstadoBusqueda.text = if (productos.isEmpty()) {
             emptyMessage
         } else {
             getString(R.string.products_found_count, productos.size)
         }
-        ajustarAlturaLista(productos.size)
-        productAdapter.submitList(productos)
+        mostrarProductosVisibles()
+    }
+
+    private fun configurarCargaPorScroll() {
+        binding.scrollBusqueda.setOnScrollChangeListener { view, _, scrollY, _, _ ->
+            val scrollView = view as androidx.core.widget.NestedScrollView
+            val contenido = scrollView.getChildAt(0)?.height ?: return@setOnScrollChangeListener
+            val finalVisible = scrollY + scrollView.height
+            if (finalVisible >= contenido - UMBRAL_SCROLL_PX) {
+                cargarSiguienteBloque()
+            }
+        }
+    }
+
+    private fun cargarSiguienteBloque() {
+        if (limiteVisible >= productosActuales.size) return
+        limiteVisible = (limiteVisible + PRODUCTOS_POR_CARGA).coerceAtMost(productosActuales.size)
+        mostrarProductosVisibles()
+    }
+
+    private fun mostrarProductosVisibles() {
+        val visibles = productosActuales.take(limiteVisible)
+        ajustarAlturaLista(visibles.size)
+        productAdapter.submitList(visibles)
     }
 
     private fun ajustarAlturaLista(cantidadProductos: Int) {
@@ -247,6 +307,11 @@ class SearchFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PRODUCTOS_POR_CARGA = 20
+        private const val UMBRAL_SCROLL_PX = 240
     }
 
     override fun onDestroyView() {

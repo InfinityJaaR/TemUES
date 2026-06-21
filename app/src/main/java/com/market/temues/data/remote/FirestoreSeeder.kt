@@ -276,19 +276,48 @@ class FirestoreSeeder @Inject constructor(
             val baseProducto = base[index % base.size]
             val nombre = nombresUnicos[index % nombresUnicos.size]
             val numero = index + 1
+            val categoria = categoriaParaProducto(nombre)
             baseProducto.copy(
                 name = nombre,
                 description = "${descripciones[index % descripciones.size]} Código demo $numero.",
                 price = baseProducto.price + (index + 1) * 2.75,
+                categoryId = categoria.first,
+                categoryName = categoria.second,
+                images = emptyList(),
                 location = ubicaciones[index % ubicaciones.size],
                 condition = if (index % 3 == 0) "nuevo" else "usado",
-                tags = baseProducto.tags + listOf("demo", "producto$numero", nombre.lowercase())
+                tags = listOf("demo", "producto$numero", nombre.lowercase(), categoria.first)
             )
         }
 
-        for (prod in productos) {
-            val docRef = firestore.collection("products").document()
-            docRef.set(prod.copy(id = docRef.id)).await()
+        productos.chunked(450).forEachIndexed { chunkIndex, chunk ->
+            val batch = firestore.batch()
+            chunk.forEachIndexed { indexInChunk, prod ->
+                val numero = chunkIndex * 450 + indexInChunk + 1
+                val docId = "demo_yami_${numero.toString().padStart(2, '0')}"
+                val docRef = firestore.collection("products").document(docId)
+                batch.set(docRef, prod.copy(id = docId))
+            }
+            batch.commit().await()
+        }
+    }
+
+    private fun categoriaParaProducto(nombre: String): Pair<String, String> {
+        val texto = nombre.lowercase()
+        return when {
+            listOf("iphone", "macbook", "audífonos", "ipad", "monitor", "teclado", "mouse", "cámara", "nintendo", "playstation", "apple watch", "galaxy", "laptop", "usb", "disco externo").any { texto.contains(it) } ->
+                "electronica" to "Electrónicos"
+            listOf("zapatos", "camisa", "jeans", "chaqueta", "mochila", "reloj", "gorra", "tenis", "vestido", "bolso", "sudadera", "uniforme").any { texto.contains(it) } ->
+                "ropa" to "Ropa y Accesorios"
+            listOf("silla", "escritorio", "sofá", "mesa", "lámpara", "ventilador", "microondas", "licuadora", "cafetera", "ollas", "colchón").any { texto.contains(it) } ->
+                "hogar" to "Hogar y Muebles"
+            listOf("bicicleta", "balón", "raqueta", "mancuernas", "patineta", "casco para bicicleta", "boxeo", "campaña", "pesca", "bmx").any { texto.contains(it) } ->
+                "deportes" to "Deportes y Ocio"
+            listOf("toyota", "scooter", "honda", "yamaha", "casco certificado", "rin", "batería para carro", "compresor").any { texto.contains(it) } ->
+                "vehiculos" to "Vehículos"
+            listOf("tutorías", "servicio", "clases", "reparación", "instalación", "asesoría", "fotografía", "transporte", "impresiones").any { texto.contains(it) } ->
+                "servicios" to "Servicios"
+            else -> "otros" to "Otros"
         }
     }
 }

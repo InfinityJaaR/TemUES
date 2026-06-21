@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_busqueda"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/temues_bg">
@@ -16,19 +17,13 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Buscar productos"
-                android:textColor="@color/temues_navy"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_busqueda_producto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:hint="¿Qué quieres encontrar?"
+                app:endIconMode="clear_text"
                 app:startIconDrawable="@drawable/ic_search">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -106,5 +101,5 @@
                 android:textColor="@color/temues_text"
                 android:textSize="14sp" />
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

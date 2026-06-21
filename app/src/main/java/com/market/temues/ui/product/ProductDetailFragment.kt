@@ -246,6 +246,7 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun loadProductImage(path: String?) {
+        binding.imgProductDetail.setImageResource(R.drawable.bg_temues_gradient)
         if (path.isNullOrBlank()) return
 
         viewLifecycleOwner.lifecycleScope.launch {
