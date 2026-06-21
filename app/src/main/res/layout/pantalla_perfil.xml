@@ -44,7 +44,10 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView style="@style/TemUESWideOption" android:text="Mis compras" />
+        <TextView
+            android:id="@+id/btn_mis_compras"
+            style="@style/TemUESWideOption"
+            android:text="Mis compras" />
         <TextView style="@style/TemUESWideOption" android:text="Mis favoritos" />
         <TextView style="@style/TemUESWideOption" android:text="Mis productos publicados" />
         <TextView style="@style/TemUESWideOption" android:text="Ventas pendientes de entregar" />

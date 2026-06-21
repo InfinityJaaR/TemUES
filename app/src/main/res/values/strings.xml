@@ -87,4 +87,32 @@
     <string name="profile_phone">Teléfono</string>
     <string name="profile_bio">Biografía</string>
     <string name="favorites_offline_mode">Mostrando datos sin conexión</string>
+
+    <!-- Carrito -->
+    <string name="carrito_vacio">Tu carrito está vacío</string>
+    <string name="carrito_explorar">Explorar productos</string>
+    <string name="carrito_total">Total</string>
+    <string name="carrito_ir_a_pagar">Ir a pagar</string>
+
+    <!-- Checkout -->
+    <string name="checkout_titulo">Confirmar pedido</string>
+    <string name="checkout_resumen">Resumen de tu pedido</string>
+    <string name="checkout_punto_entrega">Punto de entrega</string>
+    <string name="checkout_metodo_pago">Método de pago</string>
+    <string name="checkout_efectivo">Efectivo al recibir</string>
+    <string name="checkout_tarjeta">Tarjeta de crédito/débito</string>
+    <string name="checkout_confirmar">Confirmar pedido</string>
+    <string name="checkout_coordinar_chat">Coordinar por chat</string>
+    <string name="checkout_pedido_exitoso">¡Pedido realizado!</string>
+    <string name="checkout_codigo_mensaje">Tu código de recogida es:\n\n%s\n\nMuéstralo al vendedor cuando recibas tu producto.</string>
+    <string name="checkout_ver_compras">Ver mis compras</string>
+
+    <!-- Historial -->
+    <string name="historial_titulo">Mis Compras</string>
+    <string name="historial_vacio">No has realizado compras aún</string>
+
+    <!-- Detalle de orden -->
+    <string name="detalle_orden_titulo">Detalle del pedido</string>
+    <string name="detalle_articulos">Artículos del pedido</string>
+    <string name="orden_codigo">Código de recogida</string>
 </resources>

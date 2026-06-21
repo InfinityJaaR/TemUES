@@ -3,6 +3,7 @@ package com.market.temues.di
 import android.content.Context
 import androidx.room.Room
 import com.market.temues.data.local.TemUESDatabase
+import com.market.temues.data.local.dao.CarritoDao
 import com.market.temues.data.local.dao.FavoriteDao
 import dagger.Module
 import dagger.Provides
@@ -17,16 +18,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): TemUESDatabase {
-        return Room.databaseBuilder(
-            context,
-            TemUESDatabase::class.java,
-            "temues_db"
-        ).fallbackToDestructiveMigration().build()
-    }
+    fun provideDatabase(@ApplicationContext context: Context): TemUESDatabase =
+        Room.databaseBuilder(context, TemUESDatabase::class.java, "temues_db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
-    fun provideFavoriteDao(database: TemUESDatabase): FavoriteDao {
-        return database.favoriteDao()
-    }
+    fun provideCarritoDao(db: TemUESDatabase): CarritoDao = db.carritoDao()
+
+    @Provides
+    fun provideFavoriteDao(db: TemUESDatabase): FavoriteDao = db.favoriteDao()
 }
