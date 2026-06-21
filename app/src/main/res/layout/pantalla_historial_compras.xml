@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/temues_bg">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/progress_historial"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_ordenes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:visibility="gone" />
+
+    <!-- Estado vacio -->
+    <LinearLayout
+        android:id="@+id/layout_vacio_historial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="32dp"
+        android:visibility="gone">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Historial de compras"
-            android:textColor="@color/temues_navy"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:gravity="center"
+            android:text="@string/historial_vacio"
+            android:textColor="@color/temues_text_muted"
+            android:textSize="18sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical">
-
-            <TextView style="@style/TemUESInfoLine" android:text="Orden: TEM-4826" />
-            <TextView style="@style/TemUESInfoLine" android:text="Producto: Audífonos Bluetooth Pro" />
-            <TextView style="@style/TemUESInfoLine" android:text="Estado: pendiente de entrega" />
-            <TextView style="@style/TemUESInfoLine" android:text="Total: $19.49" />
-        </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

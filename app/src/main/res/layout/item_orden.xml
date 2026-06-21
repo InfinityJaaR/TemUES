@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:layout_marginBottom="10dp">
+
+    <!-- Encabezado: codigo y estado -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Código de recogida"
+                android:textColor="@color/temues_text_muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/txt_codigo_orden"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0000"
+                android:textColor="@color/temues_navy"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_estado_orden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_soft_card"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:text="pendiente"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Cantidad de articulos y total -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="6dp">
+
+        <TextView
+            android:id="@+id/txt_cantidad_articulos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1 artículo"
+            android:textColor="@color/temues_text_muted"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txt_total_orden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$0.00"
+            android:textColor="@color/temues_navy"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Punto de entrega -->
+    <TextView
+        android:id="@+id/txt_lugar_orden"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="4dp"
+        android:text="Punto de entrega: —"
+        android:textColor="@color/temues_text_muted"
+        android:textSize="12sp"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Fecha -->
+    <TextView
+        android:id="@+id/txt_fecha_orden"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="—"
+        android:textColor="@color/temues_text_muted"
+        android:textSize="12sp" />
+
+</LinearLayout>
