@@ -17,7 +17,9 @@ import com.market.temues.R
 import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.databinding.PantallaDetalleProductoBinding
 import com.market.temues.model.Product
+import com.market.temues.ui.cart.CarritoViewModel
 import com.market.temues.ui.common.ProductDetailUiState
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +29,7 @@ class ProductDetailFragment : Fragment() {
     private var _binding: PantallaDetalleProductoBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ProductDetailViewModel by viewModels()
+    private val carritoViewModel: CarritoViewModel by viewModels()
 
     private var esFavoritoSeleccionado = false
 
@@ -44,10 +47,18 @@ class ProductDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observarProducto()
-        binding.btnBuyNow.setOnClickListener {
-            findNavController().navigate(R.id.action_productDetail_to_cart)
-        }
         binding.btnAddCart.setOnClickListener {
+            val producto = (viewModel.uiState.value as? ProductDetailUiState.Success)?.product
+            if (producto != null) {
+                carritoViewModel.agregarAlCarrito(producto)
+                Snackbar.make(binding.root, "Agregado al carrito", Snackbar.LENGTH_SHORT).show()
+            }
+        }
+        binding.btnBuyNow.setOnClickListener {
+            val producto = (viewModel.uiState.value as? ProductDetailUiState.Success)?.product
+            if (producto != null) {
+                carritoViewModel.agregarAlCarrito(producto)
+            }
             findNavController().navigate(R.id.action_productDetail_to_cart)
         }
         binding.btnFavorite.setOnClickListener {

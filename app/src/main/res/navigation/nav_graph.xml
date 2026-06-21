@@ -140,7 +140,17 @@
         <action
             android:id="@+id/action_cart_to_paymentMethod"
             app:destination="@id/paymentMethodFragment" />
+
+        <action
+            android:id="@+id/action_cart_to_checkout"
+            app:destination="@id/checkoutFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.market.temues.ui.checkout.PagoFragment"
+        android:label="@string/checkout_titulo"
+        tools:layout="@layout/pantalla_checkout" />
 
     <fragment
         android:id="@+id/paymentMethodFragment"
