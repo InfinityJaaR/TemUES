@@ -30,10 +30,13 @@ class AdminCreateCategoryViewModel @Inject constructor(
     private val _categoryName = MutableStateFlow("")
     val categoryName: StateFlow<String> = _categoryName.asStateFlow()
 
+    private var originalCategory: Category? = null
+
     fun loadCategory(categoryId: String) {
         viewModelScope.launch {
             try {
                 val category = categoryRemoteDataSource.getById(categoryId).first()
+                originalCategory = category
                 _categoryName.value = category?.name ?: ""
             } catch (_: Exception) { }
         }
@@ -49,9 +52,9 @@ class AdminCreateCategoryViewModel @Inject constructor(
             _uiState.value = CreateCategoryUiState.Loading
             try {
                 if (categoryId != null) {
-                    categoryRemoteDataSource.update(
-                        Category(id = categoryId, name = name.trim())
-                    )
+                    val updated = originalCategory?.copy(name = name.trim())
+                        ?: Category(id = categoryId, name = name.trim())
+                    categoryRemoteDataSource.update(updated)
                     _uiState.value = CreateCategoryUiState.Success(true)
                 } else {
                     val maxOrder = categoryRemoteDataSource.getMaxOrder()

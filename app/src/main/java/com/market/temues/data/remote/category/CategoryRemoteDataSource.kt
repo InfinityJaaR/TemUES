@@ -58,6 +58,10 @@ class CategoryRemoteDataSource @Inject constructor(
         collection.document(category.id).set(category).await()
     }
 
+    suspend fun delete(id: String) {
+        collection.document(id).delete().await()
+    }
+
     suspend fun getMaxOrder(): Int {
         val snapshot = collection.orderBy("order", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .limit(1)
