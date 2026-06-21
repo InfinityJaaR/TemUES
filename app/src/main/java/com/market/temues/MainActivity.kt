@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -61,6 +62,12 @@ class MainActivity : AppCompatActivity() {
                             .await()
                         val isAdmin = doc.getBoolean("isAdmin") ?: false
                         updateNavForAdmin(isAdmin, navController)
+                        val destId = if (isAdmin) R.id.adminDashboardFragment
+                                     else R.id.homeFragment
+                        val navOptions = NavOptions.Builder()
+                            .setPopUpTo(R.id.loginFragment, true)
+                            .build()
+                        navController.navigate(destId, null, navOptions)
                     } catch (_: Exception) {
                         updateNavForAdmin(false, navController)
                     }
