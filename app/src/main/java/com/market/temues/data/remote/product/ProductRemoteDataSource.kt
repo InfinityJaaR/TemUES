@@ -128,6 +128,8 @@ class ProductRemoteDataSource @Inject constructor(
         location = getString("location").orEmpty(),
         tags = getStringArray("tags"),
         status = getString("status") ?: "activo",
+        hasStock = getBoolean("hasStock") ?: false,
+        stock = getLong("stock")?.toInt() ?: 0,
         createdAt = getMillis("createdAt"),
         updatedAt = getMillis("updatedAt")
     )

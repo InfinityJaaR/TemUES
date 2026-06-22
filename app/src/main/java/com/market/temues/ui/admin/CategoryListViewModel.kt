@@ -28,6 +28,20 @@ class CategoryListViewModel @Inject constructor(
     val uiState: StateFlow<CategoryListUiState> = _uiState.asStateFlow()
 
     init {
+        loadCategories()
+    }
+
+    fun deleteCategory(categoryId: String) {
+        viewModelScope.launch {
+            try {
+                categoryRemoteDataSource.delete(categoryId)
+            } catch (e: Exception) {
+                _uiState.value = CategoryListUiState.Error(e.message ?: "Error al eliminar")
+            }
+        }
+    }
+
+    private fun loadCategories() {
         viewModelScope.launch {
             categoryRemoteDataSource.getAll()
                 .retry(3)

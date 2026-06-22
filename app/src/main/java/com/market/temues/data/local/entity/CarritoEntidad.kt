@@ -10,6 +10,7 @@ data class CarritoEntidad(
     val precio: Double,
     val urlImagen: String,
     val cantidad: Int = 1,
+    val stockMaximo: Int = 1,
     val vendedorId: String = "",
     val lugarEntrega: String = ""
 )

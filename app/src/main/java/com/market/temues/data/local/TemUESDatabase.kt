@@ -9,7 +9,7 @@ import com.market.temues.data.local.entity.FavoriteEntity
 
 @Database(
     entities = [CarritoEntidad::class, FavoriteEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class TemUESDatabase : RoomDatabase() {

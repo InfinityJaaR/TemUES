@@ -30,6 +30,7 @@ class CarritoAdapter(
                 .centerCrop()
                 .into(binding.imgProducto)
 
+            binding.btnAumentar.isEnabled = articulo.cantidad < articulo.stockMaximo
             binding.btnAumentar.setOnClickListener { onAumentar(articulo.productoId) }
             binding.btnDisminuir.setOnClickListener { onDisminuir(articulo.productoId) }
             binding.btnEliminar.setOnClickListener { onEliminar(articulo.productoId) }

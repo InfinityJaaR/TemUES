@@ -2,6 +2,8 @@ package com.market.temues
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +24,7 @@ import kotlinx.coroutines.tasks.await
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var menuVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,9 +46,15 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val isAuthScreen = destination.id in authDestinations
+            val adminDestinations = setOf(
+                R.id.adminDashboardFragment, R.id.categoryListFragment,
+                R.id.adminCreateCategoryFragment
+            )
             binding.toolbar.isVisible = !isAuthScreen
             binding.bottomNavigation.isVisible = !isAuthScreen
             supportActionBar?.setDisplayHomeAsUpEnabled(!isAuthScreen)
+            menuVisible = !isAuthScreen && destination.id !in adminDestinations && destination.id != R.id.cartFragment
+            invalidateOptionsMenu()
         }
     }
 
@@ -117,6 +126,29 @@ class MainActivity : AppCompatActivity() {
         if (destino == "chatDetail" && chatId.isNotBlank()) {
             val args = Bundle().apply { putString("chatId", chatId) }
             findNavController(R.id.nav_host_fragment).navigate(R.id.chatDetailFragment, args)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.toolbar_actions, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.action_cart)?.isVisible = menuVisible
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_cart -> {
+                val navController = findNavController(R.id.nav_host_fragment)
+                if (navController.currentDestination?.id != R.id.cartFragment) {
+                    navController.navigate(R.id.cartFragment)
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

@@ -238,6 +238,12 @@ class ProductDetailFragment : Fragment() {
         binding.txtCategory.text = getString(R.string.product_category_format, product.categoryName)
         binding.imgSellerPhoto.setImageResource(R.drawable.bg_temues_gradient)
         loadProductImage(product.images.firstOrNull())
+
+        val esVendido = product.status == "vendido"
+        binding.txtVendidoOverlay.isVisible = esVendido
+        binding.txtVendidoMessage.isVisible = esVendido
+        binding.btnAddCart.isVisible = !esVendido
+        binding.btnBuyNow.isVisible = !esVendido
     }
 
     private fun loadSellerPhoto(path: String?) {
