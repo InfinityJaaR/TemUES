@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.market.temues.data.remote.chat.ChatRemoteDataSource
 import com.market.temues.data.remote.chat.MessageRemoteDataSource
+import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.data.remote.user.UserRemoteDataSource
 import com.market.temues.R
 import com.market.temues.model.Chat
@@ -43,11 +44,13 @@ class ChatDetailViewModel @Inject constructor(
     private val messageRemoteDataSource: MessageRemoteDataSource,
     private val chatRemoteDataSource: ChatRemoteDataSource,
     private val userRemoteDataSource: UserRemoteDataSource,
+    private val storageDataSource: StorageDataSource,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
     private val chatId: String = savedStateHandle["chatId"] ?: ""
+    private var imagenProductoCargada: String = ""
 
     private val _estadoUi = MutableStateFlow<EstadoDetalleChat>(EstadoDetalleChat.Cargando)
     val estadoUi: StateFlow<EstadoDetalleChat> = _estadoUi.asStateFlow()
@@ -69,6 +72,9 @@ class ChatDetailViewModel @Inject constructor(
 
     private val _eventoUi = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val eventoUi: SharedFlow<String> = _eventoUi.asSharedFlow()
+
+    private val _urlImagenProducto = MutableStateFlow("")
+    val urlImagenProducto: StateFlow<String> = _urlImagenProducto.asStateFlow()
 
     val uidActual: String get() = auth.currentUser?.uid ?: ""
 
@@ -96,7 +102,23 @@ class ChatDetailViewModel @Inject constructor(
                 .collect { chat ->
                     chatActual = chat
                     actualizarEstado()
-                    chat?.let { cargarDatosOtroUsuario(it) }
+                    chat?.let {
+                        cargarDatosOtroUsuario(it)
+                        if (it.productImage.isNotBlank() && it.productImage != imagenProductoCargada) {
+                            imagenProductoCargada = it.productImage
+                            cargarImagenProducto(it.productImage)
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun cargarImagenProducto(imagePath: String) {
+        viewModelScope.launch {
+            storageDataSource.getImageUrl(imagePath)
+                .catch { }
+                .collect { resultado ->
+                    resultado.getOrNull()?.let { _urlImagenProducto.value = it }
                 }
         }
     }

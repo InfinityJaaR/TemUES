@@ -1,10 +1,13 @@
 package com.market.temues.ui.chat
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.market.temues.R
 import com.market.temues.databinding.ItemListaChatBinding
 import com.market.temues.model.Chat
 import java.text.SimpleDateFormat
@@ -17,9 +20,15 @@ class ChatListAdapter(
 ) : ListAdapter<Chat, ChatListAdapter.ChatViewHolder>(ChatDiffCallback()) {
 
     private var nombresUsuarios: Map<String, String> = emptyMap()
+    private var urlsProductos: Map<String, String> = emptyMap()
 
     fun actualizarNombres(nombres: Map<String, String>) {
         nombresUsuarios = nombres
+        notifyDataSetChanged()
+    }
+
+    fun actualizarUrlsProductos(urls: Map<String, String>) {
+        urlsProductos = urls
         notifyDataSetChanged()
     }
 
@@ -34,17 +43,35 @@ class ChatListAdapter(
         val chat = getItem(position)
         val otroId = chat.participants.firstOrNull { it != uidActual } ?: ""
         val nombre = nombresUsuarios[otroId] ?: "Cargando..."
-        holder.vincular(chat, nombre)
+        val urlImagen = urlsProductos[chat.id]
+        holder.vincular(chat, nombre, urlImagen)
     }
 
     inner class ChatViewHolder(private val binding: ItemListaChatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun vincular(chat: Chat, nombreOtroUsuario: String) {
+        fun vincular(chat: Chat, nombreOtroUsuario: String, urlImagen: String?) {
             binding.txtNombreUsuario.text = nombreOtroUsuario.ifBlank { "Usuario" }
             binding.txtUltimoMensaje.text = chat.lastMessage.ifBlank { "Sin mensajes aún" }
             binding.txtTiempoRelativo.text = calcularTiempoRelativo(chat.lastMessageTimestamp)
             binding.txtInicialAvatar.text = nombreOtroUsuario.firstOrNull()?.uppercase() ?: "?"
+            if (chat.productName.isNotBlank()) {
+                binding.txtNombreProductoChat.visibility = View.VISIBLE
+                binding.txtNombreProductoChat.text = chat.productName
+            } else {
+                binding.txtNombreProductoChat.visibility = View.GONE
+            }
+            if (!urlImagen.isNullOrBlank()) {
+                binding.imgProductoItemChat.visibility = View.VISIBLE
+                Glide.with(binding.imgProductoItemChat)
+                    .load(urlImagen)
+                    .placeholder(R.drawable.bg_temues_gradient)
+                    .error(R.drawable.bg_temues_gradient)
+                    .centerCrop()
+                    .into(binding.imgProductoItemChat)
+            } else {
+                binding.imgProductoItemChat.visibility = View.GONE
+            }
             binding.root.setOnClickListener { alHacerClickEnChat(chat) }
         }
     }

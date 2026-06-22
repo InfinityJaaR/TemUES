@@ -57,6 +57,6 @@ class TemUESApp : Application() {
     }
 
     companion object {
-        const val CANAL_MENSAJES_CHAT = "chat_messages"
+        const val CANAL_MENSAJES_CHAT = "chat_messages_v2"
     }
 }

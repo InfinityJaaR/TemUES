@@ -46,14 +46,23 @@ class ChatRemoteDataSource @Inject constructor(
         awaitClose { registration.remove() }
     }
 
-    suspend fun createOrGet(participant1: String, participant2: String, productId: String = ""): String {
+    suspend fun createOrGet(
+        participant1: String,
+        participant2: String,
+        productId: String = "",
+        productName: String = "",
+        productImage: String = "",
+        productPrice: Double = 0.0
+    ): String {
         val existing = collection
             .whereArrayContains("participants", participant1)
             .get().await()
             .documents
             .firstOrNull { doc ->
                 val chat = doc.toObject(Chat::class.java)
-                chat != null && chat.participants.contains(participant2)
+                chat != null &&
+                chat.participants.contains(participant2) &&
+                chat.productId == productId
             }
 
         if (existing != null) return existing.id
@@ -61,6 +70,9 @@ class ChatRemoteDataSource @Inject constructor(
         val newChat = Chat(
             participants = listOf(participant1, participant2),
             productId = productId,
+            productName = productName,
+            productImage = productImage,
+            productPrice = productPrice,
             createdAt = System.currentTimeMillis()
         )
         val docRef = collection.document()

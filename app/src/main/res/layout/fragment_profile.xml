@@ -107,6 +107,16 @@
             app:icon="@android:drawable/ic_menu_recent_history" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sales_history"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:text="Historial de ventas"
+            android:textColor="@color/black"
+            app:icon="@android:drawable/ic_menu_recent_history" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_admin_panel"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="match_parent"
