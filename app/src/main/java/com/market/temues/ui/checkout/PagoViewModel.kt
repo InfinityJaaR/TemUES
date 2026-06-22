@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.market.temues.BuildConfig
 import com.market.temues.data.local.dao.CarritoDao
 import com.market.temues.data.remote.orden.OrdenRemoteDataSource
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -34,6 +36,7 @@ class PagoViewModel @Inject constructor(
     private val ordenDataSource: OrdenRemoteDataSource,
     private val fuenteRemotaProducto: ProductRemoteDataSource,
     private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -84,15 +87,30 @@ class PagoViewModel @Inject constructor(
         )
         ordenDataSource.crear(orden)
 
+        val nombreComprador = usuario.displayName ?: "Un comprador"
+        firestore.collection("users").document(orden.vendedorId)
+            .collection("notifications").add(
+                mapOf(
+                    "type" to "order_placed",
+                    "orderId" to codigo,
+                    "texto" to "Nueva orden #$codigo de $nombreComprador"
+                )
+            )
+
         for (item in items) {
             val producto = fuenteRemotaProducto.getById(item.productoId).first() ?: continue
-            if (producto.hasStock) {
+            val camposActualizados = if (producto.hasStock) {
                 val nuevoStock = (producto.stock - item.cantidad).coerceAtLeast(0)
-                val nuevoStatus = if (nuevoStock <= 0) "vendido" else producto.status
-                fuenteRemotaProducto.update(producto.copy(stock = nuevoStock, status = nuevoStatus))
+                mapOf(
+                    "stock" to nuevoStock,
+                    "status" to if (nuevoStock <= 0) "vendido" else producto.status,
+                    "updatedAt" to System.currentTimeMillis()
+                )
             } else {
-                fuenteRemotaProducto.update(producto.copy(status = "vendido"))
+                mapOf("status" to "vendido", "updatedAt" to System.currentTimeMillis())
             }
+            firestore.collection("products").document(item.productoId)
+                .update(camposActualizados).await()
         }
 
         carritoDao.limpiarTodo()

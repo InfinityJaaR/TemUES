@@ -14,7 +14,9 @@ class TemUESApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
+        if (BuildConfig.STRIPE_KEY.isNotEmpty()) {
+            PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
+        }
         crearCanalNotificaciones()
         configurarEscuchaNotificaciones()
     }
@@ -46,8 +48,5 @@ class TemUESApp : Application() {
 
     companion object {
         const val CANAL_MENSAJES_CHAT = "chat_messages"
-        if (BuildConfig.STRIPE_KEY.isNotEmpty()) {
-            PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
-        }
     }
 }

@@ -84,15 +84,21 @@ class TemUESMessagingService : FirebaseMessagingService() {
             datos: Map<String, Any>,
             uidActual: String
         ) {
-            val tipo = datos["type"] as? String ?: return
-            if (tipo != "chat_message") return
-            val chatId = datos["chatId"] as? String ?: return
-            val senderId = datos["senderId"] as? String ?: ""
-            val texto = datos["text"] as? String ?: ""
-            val nombreRemitente = datos["senderName"] as? String
-                ?: context.getString(R.string.chat_notificacion_titulo_defecto)
-            if (senderId == uidActual) return
-            mostrarNotificacion(context, chatId, nombreRemitente, texto)
+            when (datos["type"] as? String ?: return) {
+                "chat_message" -> {
+                    val chatId = datos["chatId"] as? String ?: return
+                    val senderId = datos["senderId"] as? String ?: ""
+                    if (senderId == uidActual) return
+                    val texto = datos["text"] as? String ?: ""
+                    val nombreRemitente = datos["senderName"] as? String
+                        ?: context.getString(R.string.chat_notificacion_titulo_defecto)
+                    mostrarNotificacion(context, chatId, nombreRemitente, texto)
+                }
+                "order_placed" -> {
+                    val texto = datos["texto"] as? String ?: "Nueva orden recibida"
+                    mostrarNotificacion(context, "", "Nueva orden", texto)
+                }
+            }
         }
 
         fun mostrarNotificacion(context: Context, chatId: String, titulo: String, texto: String) {
