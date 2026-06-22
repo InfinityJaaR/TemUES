@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.market.temues.data.local.dao.CarritoDao
 import com.market.temues.data.local.entity.CarritoEntidad
+import com.market.temues.data.remote.product.ProductRemoteDataSource
 import com.market.temues.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CarritoViewModel @Inject constructor(
-    private val carritoDao: CarritoDao
+    private val carritoDao: CarritoDao,
+    private val fuenteRemotaProducto: ProductRemoteDataSource
 ) : ViewModel() {
 
     val articulos: StateFlow<List<CarritoEntidad>> = carritoDao.obtenerTodos()
@@ -46,6 +49,18 @@ class CarritoViewModel @Inject constructor(
 
     fun eliminarDelCarrito(productoId: String) {
         viewModelScope.launch { carritoDao.eliminar(productoId) }
+    }
+
+    suspend fun verificarProductos(): Pair<Boolean, List<String>> {
+        val ids = carritoDao.obtenerTodos().first()
+        val vendidos = mutableListOf<String>()
+        for (articulo in ids) {
+            val producto = fuenteRemotaProducto.getById(articulo.productoId).first()
+            if (producto == null || producto.status != "activo") {
+                vendidos.add(articulo.nombreProducto)
+            }
+        }
+        return if (vendidos.isEmpty()) Pair(true, emptyList()) else Pair(false, vendidos)
     }
 
     fun aumentarCantidad(productoId: String) {

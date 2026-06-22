@@ -73,13 +73,13 @@ class CategoryListFragment : Fragment() {
         viewModel.uiState.asLiveData().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CategoryListUiState.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
+                    binding.lottieLoading.visibility = View.VISIBLE
                     binding.composeView.visibility = View.GONE
                     binding.tvEmpty.visibility = View.GONE
                     binding.tvError.visibility = View.GONE
                 }
                 is CategoryListUiState.Success -> {
-                    binding.progressBar.visibility = View.GONE
+                    binding.lottieLoading.visibility = View.GONE
                     binding.tvError.visibility = View.GONE
                     if (state.categories.isEmpty()) {
                         binding.composeView.visibility = View.GONE
@@ -97,7 +97,7 @@ class CategoryListFragment : Fragment() {
                     }
                 }
                 is CategoryListUiState.Error -> {
-                    binding.progressBar.visibility = View.GONE
+                    binding.lottieLoading.visibility = View.GONE
                     binding.composeView.visibility = View.GONE
                     binding.tvEmpty.visibility = View.GONE
                     binding.tvError.visibility = View.VISIBLE

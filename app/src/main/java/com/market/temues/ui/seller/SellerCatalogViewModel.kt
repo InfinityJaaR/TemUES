@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.market.temues.data.remote.product.ProductRemoteDataSource
 import com.market.temues.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,13 +27,16 @@ class SellerCatalogViewModel @Inject constructor(
     private val _estadoUI = MutableStateFlow<EstadoCatalogoUI>(EstadoCatalogoUI.Cargando)
     val estadoUI: StateFlow<EstadoCatalogoUI> = _estadoUI.asStateFlow()
 
+    private var cargarJob: Job? = null
+
     init {
         cargarProductos()
     }
 
     private fun cargarProductos() {
+        cargarJob?.cancel()
         val idUsuario = autenticacion.currentUser?.uid ?: return
-        fuenteRemotaProducto.getBySeller(idUsuario)
+        cargarJob = fuenteRemotaProducto.getBySeller(idUsuario)
             .onEach { listaProductos ->
                 if (listaProductos.isEmpty()) {
                     _estadoUI.value = EstadoCatalogoUI.Vacio
@@ -50,8 +54,9 @@ class SellerCatalogViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 fuenteRemotaProducto.delete(idProducto)
+                cargarProductos()
             } catch (e: Exception) {
-                // Manejar error
+                _estadoUI.value = EstadoCatalogoUI.Error(e.message ?: "Error al eliminar")
             }
         }
     }
@@ -64,7 +69,7 @@ class SellerCatalogViewModel @Inject constructor(
                     fuenteRemotaProducto.update(producto.copy(status = nuevoEstado))
                 }
             } catch (e: Exception) {
-                // Manejar error
+                _estadoUI.value = EstadoCatalogoUI.Error(e.message ?: "Error al cambiar estado")
             }
         }
     }

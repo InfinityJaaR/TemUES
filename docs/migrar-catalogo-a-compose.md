@@ -8,6 +8,8 @@ Reemplazar el `RecyclerView` + `Adapter` actual del catálogo de productos del v
 (`SellerCatalogFragment`) por un `ComposeView` con `LazyColumn` + `SwipeToDismissBox`,
 manteniendo el Toolbar, FAB y loading en XML.
 
+Las imágenes se cargan con el **Glide que ya tiene el proyecto**, sin agregar nuevas dependencias.
+
 ---
 
 ## Estado actual vs. Estado final
@@ -16,6 +18,7 @@ manteniendo el Toolbar, FAB y loading en XML.
 |---|---|---|
 | Layout | `RecyclerView` + `item_seller_product.xml` | `ComposeView` en XML |
 | Fragment | `Adapter` + `AlertDialog` de AppCompat | `setContent { }` + `AlertDialog` de Compose |
+| Imágenes | `Glide.with().into(imageView)` | `Glide.asBitmap()` + `CustomTarget` + `Image(bitmap)` |
 | ViewModel | `StateFlow<EstadoCatalogoUI>` (bien) | Sin cambios |
 | Borrables | — | `SellerProductAdapter.kt`, `item_seller_product.xml` |
 
@@ -132,6 +135,8 @@ Eliminar la lógica de RecyclerView y usar `ComposeView.setContent { }`.
 ### Imports a agregar
 
 ```kotlin
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -142,27 +147,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.isVisible
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.Request
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 ```
 
 ### Imports a eliminar
 
 ```kotlin
-// Eliminar estos:
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.market.temues.databinding.ItemSellerProductBinding
 import com.market.temues.ui.seller.SellerProductAdapter
 ```
 
 ### Observar estado del ViewModel
-
-En `observarEstado()`, reemplazar todo el contenido con:
 
 ```kotlin
 modelo.estadoUI.asLiveData().observe(viewLifecycleOwner) { estado ->
@@ -195,8 +202,6 @@ modelo.estadoUI.asLiveData().observe(viewLifecycleOwner) { estado ->
 ```
 
 ### Composable del listado
-
-Agregar al final del archivo (después de `onDestroyView`):
 
 ```kotlin
 @Composable
@@ -327,13 +332,11 @@ private fun ProductCard(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    model = producto.images.firstOrNull(),
-                    contentDescription = null,
+                ProductImage(
+                    url = producto.images.firstOrNull(),
                     modifier = Modifier
                         .size(80.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                        .clip(RoundedCornerShape(12.dp))
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -396,12 +399,44 @@ private fun ProductCard(
 }
 ```
 
-### Dependencia opcional (para AsyncImage)
-
-Si no está, agregar en `app/build.gradle.kts`:
+### Composable `ProductImage` — carga con Glide (sin nuevas dependencias)
 
 ```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+@Composable
+private fun ProductImage(
+    url: String?,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop
+) {
+    val context = LocalContext.current
+    val bitmap = remember { mutableStateOf<Bitmap?>(null) }
+
+    DisposableEffect(url) {
+        val target = object : CustomTarget<Bitmap>() {
+            override fun onResourceReady(
+                resource: Bitmap,
+                transition: Transition<in Bitmap>?
+            ) {
+                bitmap.value = resource
+            }
+            override fun onLoadCleared(placeholder: Drawable?) {
+                bitmap.value = null
+            }
+        }
+        Glide.with(context)
+            .asBitmap()
+            .load(url)
+            .into(target)
+        onDispose { Glide.with(context).clear(target) }
+    }
+
+    Image(
+        bitmap = bitmap.value?.asImageBitmap(),
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = contentScale
+    )
+}
 ```
 
 ---
@@ -436,15 +471,9 @@ fun eliminarProducto(idProducto: String) {
 
 ---
 
-## 5. Dependencias ya agregadas (no tocar)
+## 5. Dependencias — sin cambios
 
-Las dependencias de Compose ya están en el proyecto desde la migración de categorías.
-
-Si se usa `AsyncImage` de Coil, agregar en `app/build.gradle.kts`:
-
-```kotlin
-implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-```
+No se agrega ninguna dependencia nueva. Las imágenes se cargan con el **Glide** que ya tiene el proyecto.
 
 ---
 
@@ -453,11 +482,10 @@ implementation("io.coil-kt.coil3:coil-compose:3.0.4")
 | Archivo | Acción |
 |---|---|
 | `fragment_seller_catalog.xml` | `RecyclerView` → `ComposeView`; Lottie id unificado |
-| `SellerCatalogFragment.kt` | Eliminar adapter/listener; agregar `setContent { }` + composables |
-| `SellerCatalogViewModel.kt` | Recargar lista tras eliminar (opcional pero recomendado) |
+| `SellerCatalogFragment.kt` | Eliminar adapter; agregar `setContent { }` + composables + Glide wrapper |
+| `SellerCatalogViewModel.kt` | Recargar lista tras eliminar |
 | `SellerProductAdapter.kt` | **Eliminar** |
 | `item_seller_product.xml` | **Eliminar** |
-| `app/build.gradle.kts` | Agregar `coil-compose` si se usa `AsyncImage` |
 
 ---
 
@@ -470,3 +498,4 @@ implementation("io.coil-kt.coil3:coil-compose:3.0.4")
 - ✅ Lottie animación mientras carga (XML)
 - ✅ Estado vacío con mensaje (XML)
 - ✅ Toolbar "Mis productos" (XML)
+- ✅ Sin dependencias nuevas — imágenes con Glide existente
