@@ -7,6 +7,7 @@ import com.market.temues.data.remote.chat.ChatRemoteDataSource
 import com.market.temues.data.remote.user.UserRemoteDataSource
 import com.market.temues.model.Chat
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,13 +37,16 @@ class ChatListViewModel @Inject constructor(
 
     val uidActual: String get() = auth.currentUser?.uid ?: ""
 
+    private var trabajoCarga: Job? = null
+
     init {
         cargarChats()
     }
 
     fun cargarChats() {
         if (uidActual.isBlank()) return
-        viewModelScope.launch {
+        trabajoCarga?.cancel()
+        trabajoCarga = viewModelScope.launch {
             _estadoUi.value = EstadoListaChat.Cargando
             chatRemoteDataSource.getUserChats(uidActual)
                 .catch { error ->

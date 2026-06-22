@@ -85,6 +85,7 @@ class ChatDetailViewModel @Inject constructor(
         if (chatId.isNotBlank()) {
             observarChat()
             observarMensajes()
+            resetearNoLeidos()
         }
     }
 
@@ -145,6 +146,7 @@ class ChatDetailViewModel @Inject constructor(
                 )
                 messageRemoteDataSource.send(chatId, mensaje)
                 chatRemoteDataSource.updateLastMessage(chatId, texto.trim(), uidActual)
+                chatRemoteDataSource.incrementarNoLeidos(chatId, otroId)
                 dispararNotificacion(otroId, texto.trim())
             } catch (_: Exception) { }
         }
@@ -227,6 +229,7 @@ class ChatDetailViewModel @Inject constructor(
                 )
                 messageRemoteDataSource.send(chatIdCopia, mensaje)
                 chatRemoteDataSource.updateLastMessage(chatIdCopia, "🎵 Audio", uidActual)
+                chatRemoteDataSource.incrementarNoLeidos(chatIdCopia, otroId)
                 dispararNotificacion(otroId, "🎵 Audio")
             } catch (e: Exception) {
                 _eventoUi.tryEmit(contexto.getString(R.string.chat_error_envio_audio))
@@ -308,16 +311,27 @@ class ChatDetailViewModel @Inject constructor(
             .add(datosNotificacion)
     }
 
+    private fun resetearNoLeidos() {
+        val uid = uidActual
+        if (uid.isBlank()) return
+        viewModelScope.launch {
+            try {
+                chatRemoteDataSource.resetearNoLeidos(chatId, uid)
+            } catch (_: Exception) { }
+        }
+    }
+
     private fun marcarMensajesRecibidosComoLeidos(mensajes: List<Message>) {
-        mensajes
-            .filter { it.senderId != uidActual && !it.isRead }
-            .forEach { mensaje ->
-                viewModelScope.launch {
-                    try {
-                        messageRemoteDataSource.markAsRead(chatId, mensaje.id)
-                    } catch (_: Exception) { }
-                }
+        val noLeidos = mensajes.filter { it.senderId != uidActual && !it.isRead }
+        if (noLeidos.isEmpty()) return
+        resetearNoLeidos()
+        noLeidos.forEach { mensaje ->
+            viewModelScope.launch {
+                try {
+                    messageRemoteDataSource.markAsRead(chatId, mensaje.id)
+                } catch (_: Exception) { }
             }
+        }
     }
 
     fun marcarComoLeido(mensajeId: String) {

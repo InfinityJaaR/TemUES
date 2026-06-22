@@ -9,5 +9,6 @@ data class Chat(
     val lastMessage: String = "",
     val lastMessageTimestamp: Long = 0L,
     val lastMessageSenderId: String = "",
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val unreadCounts: Map<String, Long> = emptyMap()
 )

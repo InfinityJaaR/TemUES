@@ -1,5 +1,6 @@
 package com.market.temues.data.remote.chat
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.market.temues.model.Chat
 import kotlinx.coroutines.channels.awaitClose
@@ -75,5 +76,18 @@ class ChatRemoteDataSource @Inject constructor(
                 "lastMessageTimestamp" to System.currentTimeMillis()
             )
         ).await()
+    }
+
+    suspend fun incrementarNoLeidos(chatId: String, recipientId: String) {
+        collection.document(chatId)
+            .update("unreadCounts.$recipientId", FieldValue.increment(1))
+            .await()
+    }
+
+    suspend fun resetearNoLeidos(chatId: String, uid: String) {
+        if (uid.isBlank()) return
+        collection.document(chatId)
+            .update("unreadCounts.$uid", 0)
+            .await()
     }
 }

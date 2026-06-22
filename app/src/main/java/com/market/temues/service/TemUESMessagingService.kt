@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -53,17 +54,12 @@ class TemUESMessagingService : FirebaseMessagingService() {
             if (uid == uidActivo) return
             detenerEscucha()
             uidActivo = uid
-            var primeraEjecucion = true
 
             oyenteNotificaciones = FirebaseFirestore.getInstance()
                 .collection("users").document(uid)
                 .collection("notifications")
                 .addSnapshotListener { snapshot, error ->
                     if (error != null || snapshot == null) return@addSnapshotListener
-                    if (primeraEjecucion) {
-                        primeraEjecucion = false
-                        return@addSnapshotListener
-                    }
                     snapshot.documentChanges
                         .filter { it.type == DocumentChange.Type.ADDED }
                         .forEach { cambio ->
@@ -107,12 +103,15 @@ class TemUESMessagingService : FirebaseMessagingService() {
                 intent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
+            val sonido = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             val notificacion = NotificationCompat.Builder(context, TemUESApp.CANAL_MENSAJES_CHAT)
                 .setSmallIcon(R.drawable.ic_chat)
                 .setContentTitle(titulo)
                 .setContentText(texto)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(texto))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSound(sonido)
+                .setVibrate(longArrayOf(0, 250, 100, 250))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build()
