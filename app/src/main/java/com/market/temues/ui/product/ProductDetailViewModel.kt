@@ -81,7 +81,14 @@ class ProductDetailViewModel @Inject constructor(
         if (userId == producto.sellerId) return ""
         _cargandoChat.value = true
         return try {
-            chatRemoteDataSource.createOrGet(userId, producto.sellerId, producto.id)
+            chatRemoteDataSource.createOrGet(
+            participant1 = userId,
+            participant2 = producto.sellerId,
+            productId = producto.id,
+            productName = producto.name,
+            productImage = producto.images.firstOrNull() ?: "",
+            productPrice = producto.price
+        )
         } catch (_: Exception) {
             ""
         } finally {

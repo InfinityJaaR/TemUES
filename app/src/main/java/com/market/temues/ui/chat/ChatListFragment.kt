@@ -40,6 +40,7 @@ class ChatListFragment : Fragment() {
         configurarRecyclerView()
         observarEstado()
         observarNombres()
+        observarUrlsProductos()
         binding.actualizarChats.setOnRefreshListener { viewModel.cargarChats() }
     }
 
@@ -81,6 +82,16 @@ class ChatListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.nombresUsuarios.collect { nombres ->
                     adaptadorChats.actualizarNombres(nombres)
+                }
+            }
+        }
+    }
+
+    private fun observarUrlsProductos() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.urlsProductos.collect { urls ->
+                    adaptadorChats.actualizarUrlsProductos(urls)
                 }
             }
         }

@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.market.temues.data.remote.chat.ChatRemoteDataSource
+import com.market.temues.data.remote.storage.StorageDataSource
 import com.market.temues.data.remote.user.UserRemoteDataSource
 import com.market.temues.model.Chat
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +27,7 @@ sealed class EstadoListaChat {
 class ChatListViewModel @Inject constructor(
     private val chatRemoteDataSource: ChatRemoteDataSource,
     private val userRemoteDataSource: UserRemoteDataSource,
+    private val storageDataSource: StorageDataSource,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -34,7 +37,12 @@ class ChatListViewModel @Inject constructor(
     private val _nombresUsuarios = MutableStateFlow<Map<String, String>>(emptyMap())
     val nombresUsuarios: StateFlow<Map<String, String>> = _nombresUsuarios.asStateFlow()
 
+    private val _urlsProductos = MutableStateFlow<Map<String, String>>(emptyMap())
+    val urlsProductos: StateFlow<Map<String, String>> = _urlsProductos.asStateFlow()
+
     val uidActual: String get() = auth.currentUser?.uid ?: ""
+
+    private var trabajoCarga: Job? = null
 
     init {
         cargarChats()
@@ -42,7 +50,8 @@ class ChatListViewModel @Inject constructor(
 
     fun cargarChats() {
         if (uidActual.isBlank()) return
-        viewModelScope.launch {
+        trabajoCarga?.cancel()
+        trabajoCarga = viewModelScope.launch {
             _estadoUi.value = EstadoListaChat.Cargando
             chatRemoteDataSource.getUserChats(uidActual)
                 .catch { error ->
@@ -54,6 +63,7 @@ class ChatListViewModel @Inject constructor(
                     } else {
                         _estadoUi.value = EstadoListaChat.Exito(chats)
                         cargarNombresParticipantes(chats)
+                        cargarImagenesProductos(chats)
                     }
                 }
         }
@@ -72,6 +82,20 @@ class ChatListViewModel @Inject constructor(
                     .collect { usuario ->
                         val nombre = usuario?.name?.ifBlank { usuario.email } ?: otroId
                         _nombresUsuarios.value = _nombresUsuarios.value + (otroId to nombre)
+                    }
+            }
+        }
+    }
+
+    private fun cargarImagenesProductos(chats: List<Chat>) {
+        chats.filter { it.productImage.isNotBlank() }.forEach { chat ->
+            viewModelScope.launch {
+                storageDataSource.getImageUrl(chat.productImage)
+                    .catch { }
+                    .collect { resultado ->
+                        resultado.getOrNull()?.let { url ->
+                            _urlsProductos.value = _urlsProductos.value + (chat.id to url)
+                        }
                     }
             }
         }

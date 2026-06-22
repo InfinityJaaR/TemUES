@@ -13,11 +13,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.market.temues.R
 import com.market.temues.databinding.PantallaDetalleChatBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,6 +63,7 @@ class ChatDetailFragment : Fragment() {
         observarEstadoGrabacion()
         observarReproduccion()
         observarEventos()
+        observarProducto()
     }
 
     private fun configurarRecyclerView() {
@@ -203,6 +206,48 @@ class ChatDetailFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.eventoUi.collect { mensaje ->
                     Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun observarProducto() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.estadoUi.collect { estado ->
+                        if (estado is EstadoDetalleChat.Exito) {
+                            val chat = estado.chat
+                            val tieneProducto = !chat?.productId.isNullOrBlank()
+                            binding.cardProductoChat.isVisible = tieneProducto
+                            if (tieneProducto && chat != null) {
+                                binding.txtNombreProductoChat.text =
+                                    chat.productName.ifBlank { "Producto" }
+                                binding.txtPrecioProductoChat.text =
+                                    if (chat.productPrice > 0) "$%.2f".format(chat.productPrice) else ""
+                                binding.cardProductoChat.setOnClickListener {
+                                    val args = android.os.Bundle().apply {
+                                        putString("productId", chat.productId)
+                                    }
+                                    findNavController().navigate(
+                                        R.id.action_chatDetail_to_productDetail, args
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.urlImagenProducto.collect { url ->
+                        if (url.isNotBlank()) {
+                            Glide.with(binding.imgProductoChat)
+                                .load(url)
+                                .placeholder(R.drawable.bg_temues_gradient)
+                                .error(R.drawable.bg_temues_gradient)
+                                .centerCrop()
+                                .into(binding.imgProductoChat)
+                        }
+                    }
                 }
             }
         }

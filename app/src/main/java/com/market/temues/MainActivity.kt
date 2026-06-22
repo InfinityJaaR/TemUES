@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.market.temues.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var menuVisible = false
+    private var badgeListener: ListenerRegistration? = null
+    private var totalNoLeidos = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user != null) {
+                iniciarBadgeChat(user.uid)
                 lifecycleScope.launch {
                     try {
                         val doc = FirebaseFirestore.getInstance()
@@ -83,9 +87,42 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } else {
+                detenerBadgeChat()
                 updateNavForAdmin(false, navController)
             }
         }
+    }
+
+    private fun iniciarBadgeChat(uid: String) {
+        badgeListener?.remove()
+        badgeListener = FirebaseFirestore.getInstance()
+            .collection("chats")
+            .whereArrayContains("participants", uid)
+            .addSnapshotListener { snapshot, _ ->
+                totalNoLeidos = snapshot?.documents?.sumOf { doc ->
+                    val counts = doc.get("unreadCounts") as? Map<*, *>
+                    (counts?.get(uid) as? Long)?.toInt() ?: 0
+                } ?: 0
+                aplicarBadge()
+            }
+    }
+
+    private fun aplicarBadge() {
+        val badge = binding.bottomNavigation.getOrCreateBadge(R.id.chatFragment)
+        badge.isVisible = totalNoLeidos > 0
+        if (totalNoLeidos > 0) badge.number = totalNoLeidos
+    }
+
+    private fun detenerBadgeChat() {
+        badgeListener?.remove()
+        badgeListener = null
+        totalNoLeidos = 0
+        binding.bottomNavigation.removeBadge(R.id.chatFragment)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        badgeListener?.remove()
     }
 
     private fun updateNavForAdmin(isAdmin: Boolean, navController: androidx.navigation.NavController) {
@@ -111,6 +148,7 @@ class MainActivity : AppCompatActivity() {
             )
             val appBarConfig = AppBarConfiguration(userTopLevel)
             setupActionBarWithNavController(navController, appBarConfig)
+            aplicarBadge()
         }
         binding.bottomNavigation.setupWithNavController(navController)
     }

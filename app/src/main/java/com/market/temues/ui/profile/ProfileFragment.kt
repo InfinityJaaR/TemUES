@@ -58,6 +58,10 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_profile_to_historial)
         }
 
+        binding.btnSalesHistory.setOnClickListener {
+            findNavController().navigate(R.id.action_profile_to_historialVentas)
+        }
+
         binding.btnLogout.setOnClickListener {
             cerrarSesion()
         }

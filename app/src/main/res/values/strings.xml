@@ -136,6 +136,7 @@
     <!-- Historial -->
     <string name="historial_titulo">Mis Compras</string>
     <string name="historial_vacio">No has realizado compras aún</string>
+    <string name="ventas_vacio">No has realizado ventas aún</string>
 
     <!-- Detalle de orden -->
     <string name="detalle_orden_titulo">Detalle del pedido</string>
