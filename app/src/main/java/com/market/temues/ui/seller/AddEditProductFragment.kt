@@ -116,12 +116,18 @@ class AddEditProductFragment : Fragment() {
     private fun configurarEscuchadores() {
         binding.btnAddImage.setOnClickListener { mostrarSelectorOrigen() }
 
+        binding.switchHasStock.setOnCheckedChangeListener { _, isChecked ->
+            binding.tilStock.isVisible = isChecked
+        }
+
         binding.btnSave.setOnClickListener {
             modelo.nombre.value = binding.etName.text.toString()
             modelo.descripcion.value = binding.etDescription.text.toString()
             modelo.precio.value = binding.etPrice.text.toString()
             modelo.ubicacion.value = binding.etLocation.text.toString()
             modelo.condicion.value = if (binding.rbNew.isChecked) "nuevo" else "usado"
+            modelo.tieneStock.value = binding.switchHasStock.isChecked
+            modelo.cantidadStock.value = binding.etStock.text.toString()
             modelo.guardar()
         }
     }
@@ -153,6 +159,13 @@ class AddEditProductFragment : Fragment() {
             modelo.ubicacion.asLiveData().observe(viewLifecycleOwner) { if (binding.etLocation.text.isNullOrEmpty()) binding.etLocation.setText(it) }
             modelo.condicion.asLiveData().observe(viewLifecycleOwner) {
                 if (it == "nuevo") binding.rbNew.isChecked = true else binding.rbUsed.isChecked = true
+            }
+            modelo.tieneStock.asLiveData().observe(viewLifecycleOwner) {
+                binding.switchHasStock.isChecked = it
+                binding.tilStock.isVisible = it
+            }
+            modelo.cantidadStock.asLiveData().observe(viewLifecycleOwner) {
+                if (binding.etStock.text.isNullOrEmpty()) binding.etStock.setText(it)
             }
         }
     }

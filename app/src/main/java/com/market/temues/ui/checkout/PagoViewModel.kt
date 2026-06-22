@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.market.temues.BuildConfig
 import com.market.temues.data.local.dao.CarritoDao
 import com.market.temues.data.remote.orden.OrdenRemoteDataSource
+import com.market.temues.data.remote.product.ProductRemoteDataSource
 import com.market.temues.model.ArticuloOrden
 import com.market.temues.model.Orden
 import com.stripe.android.ApiResultCallback
@@ -18,6 +19,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,6 +32,7 @@ import kotlin.coroutines.resumeWithException
 class PagoViewModel @Inject constructor(
     private val carritoDao: CarritoDao,
     private val ordenDataSource: OrdenRemoteDataSource,
+    private val fuenteRemotaProducto: ProductRemoteDataSource,
     private val auth: FirebaseAuth,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -80,6 +83,18 @@ class PagoViewModel @Inject constructor(
             lugarEntrega = primerArticulo.lugarEntrega
         )
         ordenDataSource.crear(orden)
+
+        for (item in items) {
+            val producto = fuenteRemotaProducto.getById(item.productoId).first() ?: continue
+            if (producto.hasStock) {
+                val nuevoStock = (producto.stock - item.cantidad).coerceAtLeast(0)
+                val nuevoStatus = if (nuevoStock <= 0) "vendido" else producto.status
+                fuenteRemotaProducto.update(producto.copy(stock = nuevoStock, status = nuevoStatus))
+            } else {
+                fuenteRemotaProducto.update(producto.copy(status = "vendido"))
+            }
+        }
+
         carritoDao.limpiarTodo()
         return codigo
     }

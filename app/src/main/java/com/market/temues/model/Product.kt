@@ -14,6 +14,8 @@ data class Product(
     val location: String = "",
     val tags: List<String> = emptyList(),
     val status: String = "activo",
+    val hasStock: Boolean = false,
+    val stock: Int = 0,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

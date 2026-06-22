@@ -30,8 +30,9 @@ class CarritoViewModel @Inject constructor(
 
     fun agregarAlCarrito(producto: Product, cantidad: Int = 1) {
         viewModelScope.launch {
+            val stockMaximo = if (producto.hasStock) producto.stock else 1
             val articuloExistente = carritoDao.obtenerArticulo(producto.id)
-            val nuevaCantidad = (articuloExistente?.cantidad ?: 0) + cantidad
+            val nuevaCantidad = ((articuloExistente?.cantidad ?: 0) + cantidad).coerceAtMost(stockMaximo)
             val urlImagen = producto.images.firstOrNull() ?: ""
             carritoDao.insertarOActualizar(
                 CarritoEntidad(
@@ -40,6 +41,7 @@ class CarritoViewModel @Inject constructor(
                     precio = producto.price,
                     urlImagen = urlImagen,
                     cantidad = nuevaCantidad,
+                    stockMaximo = stockMaximo,
                     vendedorId = producto.sellerId,
                     lugarEntrega = producto.location
                 )
@@ -66,6 +68,7 @@ class CarritoViewModel @Inject constructor(
     fun aumentarCantidad(productoId: String) {
         viewModelScope.launch {
             val articulo = carritoDao.obtenerArticulo(productoId) ?: return@launch
+            if (articulo.cantidad >= articulo.stockMaximo) return@launch
             carritoDao.insertarOActualizar(articulo.copy(cantidad = articulo.cantidad + 1))
         }
     }

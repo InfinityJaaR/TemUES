@@ -45,6 +45,8 @@ class AddEditProductViewModel @Inject constructor(
     val ubicacion = MutableStateFlow("")
     val etiquetas = MutableStateFlow<List<String>>(emptyList())
     val imagenes = MutableStateFlow<List<String>>(emptyList())
+    val tieneStock = MutableStateFlow(false)
+    val cantidadStock = MutableStateFlow("")
 
     private val _estadoGuardado = MutableStateFlow<EstadoGuardado>(EstadoGuardado.Inactivo)
     val estadoGuardado: StateFlow<EstadoGuardado> = _estadoGuardado.asStateFlow()
@@ -74,6 +76,8 @@ class AddEditProductViewModel @Inject constructor(
                     ubicacion.value = it.location
                     etiquetas.value = it.tags
                     imagenes.value = it.images
+                    tieneStock.value = it.hasStock
+                    cantidadStock.value = if (it.hasStock) it.stock.toString() else ""
                 }
             }
             .launchIn(viewModelScope)
@@ -112,6 +116,11 @@ class AddEditProductViewModel @Inject constructor(
             return
         }
 
+        if (tieneStock.value && (cantidadStock.value.toIntOrNull() ?: 0) <= 0) {
+            _estadoGuardado.value = EstadoGuardado.Error("Ingresa una cantidad de stock válida")
+            return
+        }
+
         viewModelScope.launch {
             _estadoGuardado.value = EstadoGuardado.Guardando
             try {
@@ -127,6 +136,8 @@ class AddEditProductViewModel @Inject constructor(
                     location = ubicacion.value,
                     tags = etiquetas.value,
                     images = imagenes.value,
+                    hasStock = tieneStock.value,
+                    stock = if (tieneStock.value) cantidadStock.value.toIntOrNull() ?: 0 else 0,
                     sellerId = usuario?.uid ?: "",
                     sellerName = usuario?.displayName ?: "Vendedor"
                 )
