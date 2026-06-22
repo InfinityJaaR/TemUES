@@ -115,11 +115,7 @@
         android:label="@string/chat_detail_title"
         tools:layout="@layout/pantalla_detalle_chat">
         <argument
-            android:name="sellerId"
-            android:defaultValue=""
-            app:argType="string" />
-        <argument
-            android:name="productId"
+            android:name="chatId"
             android:defaultValue=""
             app:argType="string" />
     </fragment>

@@ -1,5 +1,6 @@
 package com.market.temues
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -112,6 +113,20 @@ class MainActivity : AppCompatActivity() {
             setupActionBarWithNavController(navController, appBarConfig)
         }
         binding.bottomNavigation.setupWithNavController(navController)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        manejarIntentNotificacion(intent)
+    }
+
+    private fun manejarIntentNotificacion(intent: Intent) {
+        val chatId = intent.getStringExtra("chatId") ?: return
+        val destino = intent.getStringExtra("destino") ?: return
+        if (destino == "chatDetail" && chatId.isNotBlank()) {
+            val args = Bundle().apply { putString("chatId", chatId) }
+            findNavController(R.id.nav_host_fragment).navigate(R.id.chatDetailFragment, args)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

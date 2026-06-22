@@ -153,6 +153,34 @@ class ProductDetailFragment : Fragment() {
         binding.txtSellerBio.isVisible = seller.bio.isNotBlank()
         binding.txtSellerBio.text = seller.bio
         loadSellerPhoto(seller.photoUrl)
+        binding.btnBuyNow.setOnClickListener {
+            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
+            findNavController().navigate(R.id.action_productDetail_to_cart)
+        }
+        binding.btnAddCart.setOnClickListener {
+            productoActual?.let { carritoViewModel.agregarAlCarrito(it) }
+            findNavController().navigate(R.id.action_productDetail_to_cart)
+        }
+        binding.btnFavorite.setOnClickListener {
+            viewModel.alternarFavorito()
+        }
+        binding.btnMessageSeller.setOnClickListener {
+            binding.btnMessageSeller.isEnabled = false
+            lifecycleScope.launch {
+                val chatId = viewModel.crearOAbrirChat()
+                binding.btnMessageSeller.isEnabled = true
+                if (chatId.isNotBlank()) {
+                    val args = android.os.Bundle().apply { putString("chatId", chatId) }
+                    findNavController().navigate(R.id.chatDetailFragment, args)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "No se pudo abrir el chat",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun observarEstadoFavorito() {
@@ -196,6 +224,7 @@ class ProductDetailFragment : Fragment() {
     private fun renderProduct(product: Product) {
         productoActual = product
         val lugarEntrega = product.location.ifBlank { getString(R.string.checkout_coordinar_chat) }
+        binding.btnMessageSeller.isVisible = !viewModel.esPropioProducto()
         binding.txtProductName.text = product.name
         binding.txtProductPrice.text = formatPrice(product.price)
         binding.txtProductDescription.text = product.description
