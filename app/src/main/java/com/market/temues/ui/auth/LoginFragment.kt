@@ -22,13 +22,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
-import com.market.temues.databinding.FragmentLoginBinding
+import com.market.temues.databinding.PantallaInicioSesionBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private var _binding: FragmentLoginBinding? = null
+    private var _binding: PantallaInicioSesionBinding? = null
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by viewModels()
@@ -54,7 +54,7 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        _binding = PantallaInicioSesionBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -151,9 +151,13 @@ class LoginFragment : Fragment() {
 
                 is AuthUiState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    findNavController().navigate(
+                    if (findNavController().currentDestination?.id != R.id.loginFragment) return@observe
+                    val destination = if (state.user.isAdmin) {
+                        R.id.action_login_to_adminDashboard
+                    } else {
                         R.id.action_login_to_home
-                    )
+                    }
+                    findNavController().navigate(destination)
                 }
 
                 is AuthUiState.Error -> {

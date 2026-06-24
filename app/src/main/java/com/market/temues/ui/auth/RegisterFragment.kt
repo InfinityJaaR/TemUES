@@ -11,13 +11,13 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.market.temues.R
-import com.market.temues.databinding.FragmentRegisterBinding
+import com.market.temues.databinding.PantallaRegistroBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
 
-    private var _binding: FragmentRegisterBinding? = null
+    private var _binding: PantallaRegistroBinding? = null
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by viewModels()
@@ -25,7 +25,7 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        _binding = PantallaRegistroBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -110,9 +110,12 @@ class RegisterFragment : Fragment() {
 
                 is AuthUiState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    findNavController().navigate(
+                    val destination = if (state.user.isAdmin) {
+                        R.id.action_register_to_adminDashboard
+                    } else {
                         R.id.action_register_to_home
-                    )
+                    }
+                    findNavController().navigate(destination)
                 }
 
                 is AuthUiState.Error -> {

@@ -6,6 +6,7 @@
     <string name="profile_title">Mi Perfil</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_search">Buscar</string>
+    <string name="nav_favorites">Favoritos</string>
     <string name="nav_chat">Mensajes</string>
     <string name="nav_profile">Perfil</string>
 
@@ -51,4 +52,133 @@
 
     <!-- Google Sign-In (reemplazar con el ID real de Firebase) -->
     <string name="default_web_client_id" translatable="false">885653148382-1ckqkhdb4t5djlsemc5gm93q1n60ormo.apps.googleusercontent.com</string>
+
+    <!-- Admin -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="admin_dashboard_title">Panel de Administración</string>
+    <string name="admin_total_products">Total de productos</string>
+    <string name="admin_products_by_category">Productos por categoría</string>
+    <string name="admin_trends">Tendencias</string>
+    <string name="admin_recent_products">Productos recientes</string>
+    <string name="admin_seed_data">Cargar datos de admin</string>
+    <string name="admin_seed_success">Cuenta admin creada. Vuelve a iniciar sesión.</string>
+    <string name="admin_seed_error">Error al crear cuenta admin</string>
+    <string name="admin_categories">Categorías</string>
+    <string name="admin_categories_title">Categorías</string>
+    <string name="admin_create_category_title">Crear categoría</string>
+    <string name="admin_create_category">Crear categoría</string>
+    <string name="admin_category_name">Nombre de la categoría</string>
+    <string name="admin_category_icon">URL del ícono</string>
+    <string name="admin_category_order">Orden</string>
+    <string name="admin_category_save">Guardar</string>
+    <string name="admin_category_saved">Categoría creada</string>
+    <string name="admin_category_updated">Categoría actualizada</string>
+    <string name="trend_up">↑</string>
+    <string name="trend_stable">→</string>
+    <string name="trend_down">↓</string>
+
+    <!-- Commerce Flow Mock Screens -->
+    <string name="product_detail_title">Detalle del producto</string>
+    <string name="cart_title">Carrito de compra</string>
+    <string name="payment_method_title">Forma de pago</string>
+    <string name="card_payment_title">Datos de tarjeta</string>
+    <string name="confirm_purchase_title">Confirmar compra</string>
+    <string name="purchase_success_title">Compra finalizada</string>
+    <string name="seller_sale_title">Venta realizada</string>
+    <string name="favorites_title">Favoritos</string>
+    <string name="chat_detail_title">Chat</string>
+
+    <!-- Ricardo: Seller Catalog, Favorites & Profile -->
+    <string name="seller_catalog_title">Mis productos</string>
+    <string name="add_edit_product_title">Nuevo producto</string>
+    <string name="edit_product_title">Editar producto</string>
+    <string name="favorites_title_ricardo">Favoritos</string>
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="seller_catalog_empty">Aún no tienes productos. ¡Crea tu primer anuncio!</string>
+    <string name="favorites_empty">No tienes productos favoritos</string>
+    <string name="product_add">Agregar producto</string>
+    <string name="product_save">Guardar</string>
+    <string name="product_delete_confirm">¿Eliminar este producto?</string>
+    <string name="product_status_active">Activo</string>
+    <string name="product_status_sold">Vendido</string>
+    <string name="product_action_mark_sold">Marcar como vendido</string>
+    <string name="product_action_reactivate">Reactivar</string>
+    <string name="product_condition_new">Nuevo</string>
+    <string name="product_condition_used">Usado</string>
+    <string name="profile_save">Guardar cambios</string>
+    <string name="profile_photo_change">Cambiar foto</string>
+    <string name="profile_photo_google">Foto de Google</string>
+    <string name="profile_phone">Teléfono</string>
+    <string name="profile_bio">Biografía</string>
+    <string name="favorites_offline_mode">Mostrando datos sin conexión</string>
+
+    <!-- Carrito -->
+    <string name="carrito_vacio">Tu carrito está vacío</string>
+    <string name="carrito_explorar">Explorar productos</string>
+    <string name="carrito_total">Total</string>
+    <string name="carrito_ir_a_pagar">Ir a pagar</string>
+
+    <!-- Checkout -->
+    <string name="checkout_titulo">Confirmar pedido</string>
+    <string name="checkout_resumen">Resumen de tu pedido</string>
+    <string name="checkout_punto_entrega">Punto de entrega</string>
+    <string name="checkout_metodo_pago">Método de pago</string>
+    <string name="checkout_efectivo">Efectivo al recibir</string>
+    <string name="checkout_tarjeta">Tarjeta de crédito/débito</string>
+    <string name="checkout_tarjeta_incompleta">Completa los datos de la tarjeta</string>
+    <string name="checkout_tarjeta_declinada">Tu tarjeta fue declinada. Verifica los datos o intenta con otro método de pago.</string>
+    <string name="checkout_confirmar">Confirmar pedido</string>
+    <string name="checkout_coordinar_chat">Coordinar por chat</string>
+    <string name="checkout_pedido_exitoso">¡Pedido realizado!</string>
+    <string name="checkout_codigo_mensaje">Tu código de recogida es:\n\n%s\n\nMuéstralo al vendedor cuando recibas tu producto.</string>
+    <string name="checkout_ver_compras">Ver mis compras</string>
+
+    <!-- Historial -->
+    <string name="historial_titulo">Mis Compras</string>
+    <string name="historial_vacio">No has realizado compras aún</string>
+    <string name="ventas_vacio">No has realizado ventas aún</string>
+
+    <!-- Detalle de orden -->
+    <string name="detalle_orden_titulo">Detalle del pedido</string>
+    <string name="detalle_articulos">Artículos del pedido</string>
+    <string name="orden_codigo">Código de recogida</string>
+    <string name="chat_subtitulo">Coordina compras, entregas y ventas dentro del campus.</string>
+    <string name="chat_lista_vacia">No tienes conversaciones</string>
+    <string name="chat_input_hint">Escribe un mensaje…</string>
+    <string name="chat_enviar">Enviar</string>
+    <string name="chat_llamar">Llamar</string>
+    <string name="chat_tu_etiqueta">Tú</string>
+    <string name="chat_grabar_audio">Grabar audio</string>
+    <string name="chat_permiso_audio">Se necesita permiso para grabar audio</string>
+    <string name="chat_notificacion_titulo_defecto">Nuevo mensaje</string>
+    <string name="chat_audio_enviado">🎵 Audio</string>
+    <string name="chat_grabando_indicador">● Grabando</string>
+    <string name="chat_audio_muy_corto">Mantén presionado para grabar</string>
+    <string name="chat_error_grabacion">Error al iniciar la grabación</string>
+    <string name="chat_error_envio_audio">Error al enviar el audio. Intenta de nuevo.</string>
+    <string name="chat_sin_telefono">El vendedor no ha registrado un número de teléfono</string>
+    <string name="chat_subiendo_audio">Enviando audio…</string>
+
+    <!-- Productos -->
+    <string name="product_price_format">$%1$.2f</string>
+    <string name="product_card_meta">%1$s · %2$s</string>
+    <string name="product_image_description">Imagen del producto</string>
+    <string name="product_name_placeholder">Nombre del producto</string>
+    <string name="product_meta_placeholder">Ubicación · condición</string>
+    <string name="product_price_placeholder">$0.00</string>
+    <string name="products_loading_firestore">Cargando productos desde Firestore...</string>
+    <string name="products_empty_filtered">No hay productos que coincidan con tu búsqueda o categoría.</string>
+    <string name="products_loaded_count">%1$d productos cargados desde Firestore.</string>
+    <string name="products_found_count">%1$d productos encontrados.</string>
+    <string name="retry">Reintentar</string>
+    <string name="favorite_added">Agregado a favoritos</string>
+    <string name="favorite_removed">Eliminado de favoritos</string>
+    <string name="seller_without_name">Vendedor sin nombre</string>
+    <string name="product_place_format">Lugar: %1$s</string>
+    <string name="product_condition_format">Condición: %1$s</string>
+    <string name="product_delivery_point_format">Punto de entrega: %1$s</string>
+    <string name="product_category_format">Categoría: %1$s</string>
+    <string name="home_categories_more">Otros ▾</string>
+    <string name="seller_phone_format">Tel: %1$s</string>
+    <string name="error_no_internet">Sin conexión a internet</string>
 </resources>

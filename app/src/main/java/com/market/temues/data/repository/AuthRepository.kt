@@ -4,14 +4,20 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.market.temues.model.User
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 @Singleton
 class AuthRepository @Inject constructor(
@@ -20,23 +26,23 @@ class AuthRepository @Inject constructor(
 ) {
 
     val currentUser: Flow<User?> = callbackFlow {
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         val listener = FirebaseAuth.AuthStateListener { auth ->
-            val firebaseUser = auth.currentUser
-            if (firebaseUser != null) {
-                trySend(
-                    User(
-                        id = firebaseUser.uid,
-                        email = firebaseUser.email ?: "",
-                        name = firebaseUser.displayName ?: "",
-                        photoUrl = firebaseUser.photoUrl?.toString() ?: ""
-                    )
-                )
-            } else {
-                trySend(null)
+            scope.launch {
+                val firebaseUser = auth.currentUser
+                if (firebaseUser != null) {
+                    val user = fetchUserFromFirestore(firebaseUser.uid)
+                    trySend(user)
+                } else {
+                    trySend(null)
+                }
             }
         }
         firebaseAuth.addAuthStateListener(listener)
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
+        awaitClose {
+            scope.cancel()
+            firebaseAuth.removeAuthStateListener(listener)
+        }
     }
 
     fun isUserAuthenticated(): Boolean = firebaseAuth.currentUser != null
@@ -46,13 +52,19 @@ class AuthRepository @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser = firebaseAuth.currentUser
-                    val user = User(
-                        id = firebaseUser?.uid ?: "",
-                        email = firebaseUser?.email ?: email,
-                        name = firebaseUser?.displayName ?: "",
-                        photoUrl = firebaseUser?.photoUrl?.toString() ?: ""
-                    )
-                    trySend(Result.success(user))
+                    if (firebaseUser != null) {
+                        val scope = CoroutineScope(Dispatchers.Main)
+                        scope.launch {
+                            try {
+                                val user = fetchUserFromFirestore(firebaseUser.uid)
+                                trySend(Result.success(user))
+                            } catch (e: Exception) {
+                                trySend(Result.failure(e))
+                            }
+                        }
+                    } else {
+                        trySend(Result.failure(Exception("Error al iniciar sesión")))
+                    }
                 } else {
                     trySend(Result.failure(task.exception ?: Exception("Error al iniciar sesión")))
                 }
@@ -65,17 +77,29 @@ class AuthRepository @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser = firebaseAuth.currentUser
-                    firebaseUser?.updateProfile(
-                        UserProfileChangeRequest.Builder().setDisplayName(name).build()
-                    )
-                    val user = User(
-                        id = firebaseUser?.uid ?: "",
-                        email = email,
-                        name = name,
-                        photoUrl = ""
-                    )
-                    firestore.collection("users").document(user.id).set(user)
-                    trySend(Result.success(user))
+                    if (firebaseUser != null) {
+                        firebaseUser.updateProfile(
+                            UserProfileChangeRequest.Builder().setDisplayName(name).build()
+                        )
+                        val user = User(
+                            id = firebaseUser.uid,
+                            email = email,
+                            name = name,
+                            photoUrl = firebaseUser.photoUrl?.toString() ?: ""
+                        )
+                        val scope = CoroutineScope(Dispatchers.Main)
+                        scope.launch {
+                            try {
+                                firestore.collection("users").document(user.id).set(user).await()
+                                val created = fetchUserFromFirestore(firebaseUser.uid)
+                                trySend(Result.success(created))
+                            } catch (e: Exception) {
+                                trySend(Result.success(user))
+                            }
+                        }
+                    } else {
+                        trySend(Result.failure(Exception("Error al registrarse")))
+                    }
                 } else {
                     trySend(Result.failure(task.exception ?: Exception("Error al registrarse")))
                 }
@@ -89,14 +113,26 @@ class AuthRepository @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser = firebaseAuth.currentUser
-                    val user = User(
-                        id = firebaseUser?.uid ?: "",
-                        email = firebaseUser?.email ?: "",
-                        name = firebaseUser?.displayName ?: "",
-                        photoUrl = firebaseUser?.photoUrl?.toString() ?: ""
-                    )
-                    firestore.collection("users").document(user.id).set(user)
-                    trySend(Result.success(user))
+                    if (firebaseUser != null) {
+                        val scope = CoroutineScope(Dispatchers.Main)
+                        scope.launch {
+                            try {
+                                val user = fetchUserFromFirestore(firebaseUser.uid)
+                                firestore.collection("users").document(user.id).set(user).await()
+                                trySend(Result.success(user))
+                            } catch (e: Exception) {
+                                trySend(Result.success(
+                                    User(
+                                        id = firebaseUser.uid,
+                                        email = firebaseUser.email ?: "",
+                                        name = firebaseUser.displayName ?: ""
+                                    )
+                                ))
+                            }
+                        }
+                    } else {
+                        trySend(Result.failure(Exception("Error con Google Sign-In")))
+                    }
                 } else {
                     trySend(Result.failure(task.exception ?: Exception("Error con Google Sign-In")))
                 }
@@ -110,14 +146,26 @@ class AuthRepository @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser = firebaseAuth.currentUser
-                    val user = User(
-                        id = firebaseUser?.uid ?: "",
-                        email = firebaseUser?.email ?: "",
-                        name = firebaseUser?.displayName ?: "",
-                        photoUrl = firebaseUser?.photoUrl?.toString() ?: ""
-                    )
-                    firestore.collection("users").document(user.id).set(user)
-                    trySend(Result.success(user))
+                    if (firebaseUser != null) {
+                        val scope = CoroutineScope(Dispatchers.Main)
+                        scope.launch {
+                            try {
+                                val user = fetchUserFromFirestore(firebaseUser.uid)
+                                firestore.collection("users").document(user.id).set(user).await()
+                                trySend(Result.success(user))
+                            } catch (e: Exception) {
+                                trySend(Result.success(
+                                    User(
+                                        id = firebaseUser.uid,
+                                        email = firebaseUser.email ?: "",
+                                        name = firebaseUser.displayName ?: ""
+                                    )
+                                ))
+                            }
+                        }
+                    } else {
+                        trySend(Result.failure(Exception("Error con Facebook Login")))
+                    }
                 } else {
                     trySend(Result.failure(task.exception ?: Exception("Error con Facebook Login")))
                 }
@@ -139,5 +187,31 @@ class AuthRepository @Inject constructor(
 
     fun signOut() {
         firebaseAuth.signOut()
+    }
+
+    private suspend fun fetchUserFromFirestore(uid: String): User {
+        val doc = firestore.collection("users").document(uid).get().await()
+        return if (doc.exists()) {
+            userFromSnapshot(doc, uid)
+        } else {
+            val fbUser = firebaseAuth.currentUser
+            User(
+                id = uid,
+                email = fbUser?.email ?: "",
+                name = fbUser?.displayName ?: ""
+            )
+        }
+    }
+
+    private fun userFromSnapshot(doc: DocumentSnapshot, uid: String): User {
+        val data = doc.data ?: return User(id = uid)
+        return User(
+            id = uid,
+            email = data["email"] as? String ?: "",
+            name = data["name"] as? String ?: "",
+            photoUrl = data["photoUrl"] as? String ?: "",
+            isAdmin = data["isAdmin"] as? Boolean ?: false,
+            createdAt = data["createdAt"] as? Long ?: System.currentTimeMillis()
+        )
     }
 }

@@ -1,5 +1,6 @@
 package com.market.temues.data.remote.chat
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.market.temues.model.Chat
 import kotlinx.coroutines.channels.awaitClose
@@ -20,10 +21,7 @@ class ChatRemoteDataSource @Inject constructor(
             .whereArrayContains("participants", userId)
             .orderBy("lastMessageTimestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
+                if (error != null) return@addSnapshotListener
                 val chats = snapshot?.documents?.mapNotNull {
                     it.toObject(Chat::class.java)?.copy(id = it.id)
                 } ?: emptyList()
@@ -35,24 +33,30 @@ class ChatRemoteDataSource @Inject constructor(
     fun getById(chatId: String): Flow<Chat?> = callbackFlow {
         val registration = collection.document(chatId)
             .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
+                if (error != null) return@addSnapshotListener
                 val chat = snapshot?.toObject(Chat::class.java)?.copy(id = snapshot.id)
                 trySend(chat)
             }
         awaitClose { registration.remove() }
     }
 
-    suspend fun createOrGet(participant1: String, participant2: String, productId: String = ""): String {
+    suspend fun createOrGet(
+        participant1: String,
+        participant2: String,
+        productId: String = "",
+        productName: String = "",
+        productImage: String = "",
+        productPrice: Double = 0.0
+    ): String {
         val existing = collection
             .whereArrayContains("participants", participant1)
             .get().await()
             .documents
             .firstOrNull { doc ->
                 val chat = doc.toObject(Chat::class.java)
-                chat != null && chat.participants.contains(participant2)
+                chat != null &&
+                chat.participants.contains(participant2) &&
+                chat.productId == productId
             }
 
         if (existing != null) return existing.id
@@ -60,6 +64,9 @@ class ChatRemoteDataSource @Inject constructor(
         val newChat = Chat(
             participants = listOf(participant1, participant2),
             productId = productId,
+            productName = productName,
+            productImage = productImage,
+            productPrice = productPrice,
             createdAt = System.currentTimeMillis()
         )
         val docRef = collection.document()
@@ -75,5 +82,18 @@ class ChatRemoteDataSource @Inject constructor(
                 "lastMessageTimestamp" to System.currentTimeMillis()
             )
         ).await()
+    }
+
+    suspend fun incrementarNoLeidos(chatId: String, recipientId: String) {
+        collection.document(chatId)
+            .update("unreadCounts.$recipientId", FieldValue.increment(1))
+            .await()
+    }
+
+    suspend fun resetearNoLeidos(chatId: String, uid: String) {
+        if (uid.isBlank()) return
+        collection.document(chatId)
+            .update("unreadCounts.$uid", 0)
+            .await()
     }
 }

@@ -10,11 +10,17 @@
         android:id="@+id/loginFragment"
         android:name="com.market.temues.ui.auth.LoginFragment"
         android:label="@string/login_title"
-        tools:layout="@layout/fragment_login">
+        tools:layout="@layout/pantalla_inicio_sesion">
 
         <action
             android:id="@+id/action_login_to_home"
             app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_login_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
 
@@ -31,11 +37,17 @@
         android:id="@+id/registerFragment"
         android:name="com.market.temues.ui.auth.RegisterFragment"
         android:label="@string/register_title"
-        tools:layout="@layout/fragment_register">
+        tools:layout="@layout/pantalla_registro">
 
         <action
             android:id="@+id/action_register_to_home"
             app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_register_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
 
@@ -50,38 +62,287 @@
         android:id="@+id/forgotPasswordFragment"
         android:name="com.market.temues.ui.auth.ForgotPasswordFragment"
         android:label="@string/forgot_title"
-        tools:layout="@layout/fragment_forgot_password" />
+        tools:layout="@layout/pantalla_recuperar_contrasena" />
 
     <!-- Main Screens -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.market.temues.ui.home.HomeFragment"
         android:label="@string/nav_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/pantalla_inicio">
+
+        <action
+            android:id="@+id/action_home_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.market.temues.ui.search.SearchFragment"
         android:label="@string/nav_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/pantalla_busqueda">
+
+        <action
+            android:id="@+id/action_search_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.market.temues.ui.favorites.FavoritesFragment"
+        android:label="@string/favorites_title"
+        tools:layout="@layout/pantalla_favoritos">
+
+        <action
+            android:id="@+id/action_favorites_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.market.temues.ui.chat.ChatListFragment"
         android:label="@string/nav_chat"
-        tools:layout="@layout/fragment_chat_list" />
+        tools:layout="@layout/pantalla_lista_chats">
+
+        <action
+            android:id="@+id/action_chat_to_chatDetail"
+            app:destination="@id/chatDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/chatDetailFragment"
+        android:name="com.market.temues.ui.chat.ChatDetailFragment"
+        android:label="@string/chat_detail_title"
+        tools:layout="@layout/pantalla_detalle_chat">
+        <argument
+            android:name="chatId"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="productId"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="productImage"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_chatDetail_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.market.temues.ui.profile.ProfileFragment"
         android:label="@string/nav_profile"
-        tools:layout="@layout/fragment_profile">
+        tools:layout="@layout/pantalla_perfil">
+
+        <action
+            android:id="@+id/action_profile_to_adminDashboard"
+            app:destination="@id/adminDashboardFragment" />
 
         <action
             android:id="@+id/action_profile_to_login"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_profile_to_sellerCatalog"
+            app:destination="@id/sellerCatalogFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_favorites"
+            app:destination="@id/favoritesFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_editProfile"
+            app:destination="@id/editProfileFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_historial"
+            app:destination="@id/historialFragment" />
+
+        <action
+            android:id="@+id/action_profile_to_historialVentas"
+            app:destination="@id/historialVentasFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sellerCatalogFragment"
+        android:name="com.market.temues.ui.seller.SellerCatalogFragment"
+        android:label="@string/seller_catalog_title"
+        tools:layout="@layout/fragment_seller_catalog">
+
+        <action
+            android:id="@+id/action_sellerCatalog_to_addEditProduct"
+            app:destination="@id/addEditProductFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.market.temues.ui.seller.AddEditProductFragment"
+        android:label="@string/add_edit_product_title"
+        tools:layout="@layout/fragment_add_edit_product">
+        <argument
+            android:name="productId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.market.temues.ui.profile.EditProfileFragment"
+        android:label="@string/edit_profile_title" />
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.market.temues.ui.product.ProductDetailFragment"
+        android:label="@string/product_detail_title"
+        tools:layout="@layout/pantalla_detalle_producto">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_productDetail_to_cart"
+            app:destination="@id/cartFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_favorites"
+            app:destination="@id/favoritesFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_chatDetail"
+            app:destination="@id/chatDetailFragment" />
+
+        <action
+            android:id="@+id/action_productDetail_to_checkout"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.market.temues.ui.cart.CartFragment"
+        android:label="@string/cart_title"
+        tools:layout="@layout/pantalla_carrito">
+
+        <action
+            android:id="@+id/action_cart_to_paymentMethod"
+            app:destination="@id/paymentMethodFragment" />
+
+        <action
+            android:id="@+id/action_cart_to_checkout"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.market.temues.ui.checkout.PagoFragment"
+        android:label="@string/checkout_titulo"
+        tools:layout="@layout/pantalla_checkout" />
+
+    <fragment
+        android:id="@+id/paymentMethodFragment"
+        android:name="com.market.temues.ui.payment.PaymentMethodFragment"
+        android:label="@string/payment_method_title"
+        tools:layout="@layout/pantalla_metodo_pago">
+
+        <action
+            android:id="@+id/action_paymentMethod_to_cardPayment"
+            app:destination="@id/cardPaymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cardPaymentFragment"
+        android:name="com.market.temues.ui.payment.CardPaymentFragment"
+        android:label="@string/card_payment_title"
+        tools:layout="@layout/pantalla_pago_tarjeta">
+
+        <action
+            android:id="@+id/action_cardPayment_to_confirmPurchase"
+            app:destination="@id/confirmPurchaseFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/confirmPurchaseFragment"
+        android:name="com.market.temues.ui.payment.ConfirmPurchaseFragment"
+        android:label="@string/confirm_purchase_title"
+        tools:layout="@layout/pantalla_confirmar_compra">
+
+        <action
+            android:id="@+id/action_confirmPurchase_to_purchaseSuccess"
+            app:destination="@id/purchaseSuccessFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/purchaseSuccessFragment"
+        android:name="com.market.temues.ui.payment.PurchaseSuccessFragment"
+        android:label="@string/purchase_success_title"
+        tools:layout="@layout/pantalla_compra_exitosa" />
+
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.market.temues.ui.admin.AdminDashboardFragment"
+        android:label="@string/admin_dashboard_title"
+        tools:layout="@layout/fragment_admin_dashboard" />
+
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.market.temues.ui.admin.CategoryListFragment"
+        android:label="@string/admin_categories_title"
+        tools:layout="@layout/fragment_category_list" />
+
+    <fragment
+        android:id="@+id/adminCreateCategoryFragment"
+        android:name="com.market.temues.ui.admin.AdminCreateCategoryFragment"
+        android:label="@string/admin_create_category_title"
+        tools:layout="@layout/fragment_admin_create_category" />
+
+    <fragment
+        android:id="@+id/sellerSaleDetailFragment"
+        android:name="com.market.temues.ui.seller.SellerSaleDetailFragment"
+        android:label="@string/seller_sale_title"
+        tools:layout="@layout/pantalla_detalle_venta_vendedor">
+        <argument
+            android:name="ordenId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historialVentasFragment"
+        android:name="com.market.temues.ui.seller.HistorialVentasFragment"
+        android:label="Mis ventas"
+        tools:layout="@layout/pantalla_historial_compras">
+        <action
+            android:id="@+id/action_historialVentas_to_sellerSaleDetail"
+            app:destination="@id/sellerSaleDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historialFragment"
+        android:name="com.market.temues.ui.history.HistorialFragment"
+        android:label="@string/historial_titulo"
+        tools:layout="@layout/pantalla_historial_compras">
+
+        <action
+            android:id="@+id/action_historial_to_detalleOrden"
+            app:destination="@id/detalleOrdenFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detalleOrdenFragment"
+        android:name="com.market.temues.ui.history.DetalleOrdenFragment"
+        android:label="@string/detalle_orden_titulo"
+        tools:layout="@layout/pantalla_detalle_orden">
+
+        <argument
+            android:name="ordenId"
+            app:argType="string" />
     </fragment>
 
 </navigation>
