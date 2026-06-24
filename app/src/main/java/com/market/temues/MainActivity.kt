@@ -59,8 +59,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.adminDashboardFragment, R.id.categoryListFragment,
                 R.id.adminCreateCategoryFragment
             )
-            val hideBottomNav = isAuthScreen || destination.id == R.id.chatDetailFragment
-            binding.toolbar.isVisible = !isAuthScreen
+            val fullScreenDestinations = setOf(R.id.chatDetailFragment, R.id.cameraFragment)
+            val hideBottomNav = isAuthScreen || destination.id in fullScreenDestinations
+            binding.toolbar.isVisible = !isAuthScreen && destination.id != R.id.cameraFragment
             binding.bottomNavigation.isVisible = !hideBottomNav
             supportActionBar?.setDisplayHomeAsUpEnabled(!isAuthScreen)
             menuVisible = !isAuthScreen && destination.id !in adminDestinations && destination.id != R.id.cartFragment

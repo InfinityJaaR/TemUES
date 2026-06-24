@@ -12,16 +12,17 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.market.temues.R
 import com.market.temues.databinding.FragmentAddEditProductBinding
+import com.market.temues.ui.camera.CameraFragment
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
 
 @AndroidEntryPoint
 class AddEditProductFragment : Fragment() {
@@ -32,14 +33,8 @@ class AddEditProductFragment : Fragment() {
     private val modelo: AddEditProductViewModel by viewModels()
     private val argumentos: AddEditProductFragmentArgs by navArgs()
 
-    private var uriCamara: Uri? = null
-
     private val permisoCamaraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { concedido ->
-        if (concedido) abrirCamara()
-    }
-
-    private val camaraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { exito ->
-        if (exito) uriCamara?.let { modelo.subirImagen(it) }
+        if (concedido) navegarACamara()
     }
 
     private val galeriaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -60,6 +55,10 @@ class AddEditProductFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setFragmentResultListener(CameraFragment.RESULTADO_FOTO) { _, bundle ->
+            val uriString = bundle.getString(CameraFragment.CLAVE_URI) ?: return@setFragmentResultListener
+            modelo.subirImagen(Uri.parse(uriString))
+        }
         configurarSelectorCategorias()
         configurarListaImagenes()
         configurarEscuchadores()
@@ -100,17 +99,11 @@ class AddEditProductFragment : Fragment() {
             permisoCamaraLauncher.launch(Manifest.permission.CAMERA)
             return
         }
-        val archivo = File(
-            requireContext().cacheDir,
-            "product_images/foto_${System.currentTimeMillis()}.jpg"
-        )
-        archivo.parentFile?.mkdirs()
-        uriCamara = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.fileprovider",
-            archivo
-        )
-        camaraLauncher.launch(uriCamara!!)
+        navegarACamara()
+    }
+
+    private fun navegarACamara() {
+        findNavController().navigate(R.id.action_addEditProduct_to_camera)
     }
 
     private fun configurarEscuchadores() {

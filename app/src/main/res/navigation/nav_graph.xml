@@ -192,7 +192,16 @@
             android:name="productId"
             android:defaultValue=""
             app:argType="string" />
+        <action
+            android:id="@+id/action_addEditProduct_to_camera"
+            app:destination="@id/cameraFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.market.temues.ui.camera.CameraFragment"
+        android:label="Cámara"
+        tools:layout="@layout/fragment_camera" />
 
     <fragment
         android:id="@+id/editProfileFragment"
