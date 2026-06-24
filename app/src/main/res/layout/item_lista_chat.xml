@@ -74,6 +74,7 @@
             android:textColor="@color/temues_text_muted"
             android:textSize="11sp" />
 
+
         <ImageView
             android:id="@+id/img_producto_item_chat"
             android:layout_width="48dp"

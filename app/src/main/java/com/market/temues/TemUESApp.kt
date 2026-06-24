@@ -7,7 +7,8 @@ import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
 import com.google.firebase.auth.FirebaseAuth
-import com.market.temues.service.TemUESMessagingService
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.stripe.android.PaymentConfiguration
 import dagger.hilt.android.HiltAndroidApp
 
@@ -20,7 +21,18 @@ class TemUESApp : Application() {
             PaymentConfiguration.init(applicationContext, BuildConfig.STRIPE_KEY)
         }
         crearCanalNotificaciones()
-        configurarEscuchaNotificaciones()
+        guardarFcmTokenAlIniciarSesion()
+    }
+
+    private fun guardarFcmTokenAlIniciarSesion() {
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            val uid = auth.currentUser?.uid ?: return@addAuthStateListener
+            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+                FirebaseFirestore.getInstance()
+                    .collection("users").document(uid)
+                    .update("fcmToken", token)
+            }
+        }
     }
 
     private fun crearCanalNotificaciones() {
@@ -42,17 +54,6 @@ class TemUESApp : Application() {
             }
             getSystemService(NotificationManager::class.java)
                 .createNotificationChannel(canal)
-        }
-    }
-
-    private fun configurarEscuchaNotificaciones() {
-        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            val uid = auth.currentUser?.uid
-            if (uid != null) {
-                TemUESMessagingService.iniciarEscucha(applicationContext, uid)
-            } else {
-                TemUESMessagingService.detenerEscucha()
-            }
         }
     }
 

@@ -1,10 +1,15 @@
 package com.market.temues
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
@@ -41,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
+        solicitarPermisoNotificaciones()
         observeAuthState(navController)
 
         val authDestinations = setOf(
@@ -53,11 +59,26 @@ class MainActivity : AppCompatActivity() {
                 R.id.adminDashboardFragment, R.id.categoryListFragment,
                 R.id.adminCreateCategoryFragment
             )
+            val hideBottomNav = isAuthScreen || destination.id == R.id.chatDetailFragment
             binding.toolbar.isVisible = !isAuthScreen
-            binding.bottomNavigation.isVisible = !isAuthScreen
+            binding.bottomNavigation.isVisible = !hideBottomNav
             supportActionBar?.setDisplayHomeAsUpEnabled(!isAuthScreen)
             menuVisible = !isAuthScreen && destination.id !in adminDestinations && destination.id != R.id.cartFragment
             invalidateOptionsMenu()
+        }
+    }
+
+    private fun solicitarPermisoNotificaciones() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
+            }
         }
     }
 

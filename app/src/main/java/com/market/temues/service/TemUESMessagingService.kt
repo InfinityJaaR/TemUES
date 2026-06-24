@@ -7,9 +7,7 @@ import android.content.Intent
 import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.market.temues.MainActivity
@@ -47,56 +45,6 @@ class TemUESMessagingService : FirebaseMessagingService() {
     }
 
     companion object {
-        private var oyenteNotificaciones: ListenerRegistration? = null
-        private var uidActivo: String? = null
-
-        fun iniciarEscucha(context: Context, uid: String) {
-            if (uid == uidActivo) return
-            detenerEscucha()
-            uidActivo = uid
-
-            oyenteNotificaciones = FirebaseFirestore.getInstance()
-                .collection("users").document(uid)
-                .collection("notifications")
-                .addSnapshotListener { snapshot, error ->
-                    if (error != null || snapshot == null) return@addSnapshotListener
-                    snapshot.documentChanges
-                        .filter { it.type == DocumentChange.Type.ADDED }
-                        .forEach { cambio ->
-                            procesarNotificacion(context, cambio.document.data, uid)
-                            cambio.document.reference.delete()
-                        }
-                }
-        }
-
-        fun detenerEscucha() {
-            oyenteNotificaciones?.remove()
-            oyenteNotificaciones = null
-            uidActivo = null
-        }
-
-        private fun procesarNotificacion(
-            context: Context,
-            datos: Map<String, Any>,
-            uidActual: String
-        ) {
-            when (datos["type"] as? String ?: return) {
-                "chat_message" -> {
-                    val chatId = datos["chatId"] as? String ?: return
-                    val senderId = datos["senderId"] as? String ?: ""
-                    if (senderId == uidActual) return
-                    val texto = datos["text"] as? String ?: ""
-                    val nombreRemitente = datos["senderName"] as? String
-                        ?: context.getString(R.string.chat_notificacion_titulo_defecto)
-                    mostrarNotificacion(context, chatId, nombreRemitente, texto)
-                }
-                "order_placed" -> {
-                    val texto = datos["texto"] as? String ?: "Nueva orden recibida"
-                    mostrarNotificacion(context, "", "Nueva orden", texto)
-                }
-            }
-        }
-
         fun mostrarNotificacion(context: Context, chatId: String, titulo: String, texto: String) {
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
