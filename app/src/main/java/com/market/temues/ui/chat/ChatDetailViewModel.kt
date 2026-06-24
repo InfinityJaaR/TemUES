@@ -16,6 +16,7 @@ import com.market.temues.data.remote.user.UserRemoteDataSource
 import com.market.temues.R
 import com.market.temues.model.Chat
 import com.market.temues.model.Message
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
@@ -154,8 +155,15 @@ class ChatDetailViewModel @Inject constructor(
     }
 
     fun enviarMensaje(texto: String) {
-        if (texto.isBlank() || chatId.isBlank()) return
-        val otroId = chatActual?.participants?.firstOrNull { it != uidActual } ?: return
+        if (texto.isBlank() || chatId.isBlank()) {
+            Log.w("ChatVM", "enviarMensaje abortado: texto=${texto.isBlank()} chatId=${chatId.isBlank()}")
+            return
+        }
+        val otroId = chatActual?.participants?.firstOrNull { it != uidActual }
+        if (otroId == null) {
+            Log.w("ChatVM", "enviarMensaje abortado: chatActual=${chatActual} uidActual=$uidActual")
+            return
+        }
 
         viewModelScope.launch {
             try {
@@ -167,10 +175,15 @@ class ChatDetailViewModel @Inject constructor(
                     timestamp = System.currentTimeMillis()
                 )
                 messageRemoteDataSource.send(chatId, mensaje)
+                Log.d("ChatVM", "send OK")
                 chatRemoteDataSource.updateLastMessage(chatId, texto.trim(), uidActual)
+                Log.d("ChatVM", "updateLastMessage OK")
                 chatRemoteDataSource.incrementarNoLeidos(chatId, otroId)
+                Log.d("ChatVM", "incrementarNoLeidos OK")
                 dispararNotificacion(otroId, texto.trim())
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                Log.e("ChatVM", "Error en enviarMensaje: ${e.message}", e)
+            }
         }
     }
 

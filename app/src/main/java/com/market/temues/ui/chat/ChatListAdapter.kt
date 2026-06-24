@@ -55,6 +55,11 @@ class ChatListAdapter(
             binding.txtUltimoMensaje.text = chat.lastMessage.ifBlank { "Sin mensajes aún" }
             binding.txtTiempoRelativo.text = calcularTiempoRelativo(chat.lastMessageTimestamp)
             binding.txtInicialAvatar.text = nombreOtroUsuario.firstOrNull()?.uppercase() ?: "?"
+
+            val noLeidos = chat.unreadCounts[uidActual] ?: 0L
+            binding.root.setBackgroundResource(
+                if (noLeidos > 0L) R.drawable.bg_card_no_leido else R.drawable.bg_card
+            )
             if (chat.productName.isNotBlank()) {
                 binding.txtNombreProductoChat.visibility = View.VISIBLE
                 binding.txtNombreProductoChat.text = chat.productName

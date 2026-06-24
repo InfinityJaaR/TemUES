@@ -65,6 +65,13 @@
                     android:textColor="@color/white"
                     android:textSize="10sp"
                     android:alpha="0.7" />
+
+                <ImageView
+                    android:id="@+id/img_estado_leido"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:contentDescription="@null" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

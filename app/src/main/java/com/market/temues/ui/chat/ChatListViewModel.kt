@@ -43,6 +43,8 @@ class ChatListViewModel @Inject constructor(
     val uidActual: String get() = auth.currentUser?.uid ?: ""
 
     private var trabajoCarga: Job? = null
+    private val participantesConEscucha = mutableSetOf<String>()
+    private val productosConEscucha = mutableSetOf<String>()
 
     init {
         cargarChats()
@@ -70,35 +72,39 @@ class ChatListViewModel @Inject constructor(
     }
 
     private fun cargarNombresParticipantes(chats: List<Chat>) {
-        val otrosIds = chats
+        chats
             .mapNotNull { chat -> chat.participants.firstOrNull { it != uidActual } }
             .filter { it.isNotBlank() }
             .distinct()
-
-        otrosIds.forEach { otroId ->
-            viewModelScope.launch {
-                userRemoteDataSource.getById(otroId)
-                    .catch { }
-                    .collect { usuario ->
-                        val nombre = usuario?.name?.ifBlank { usuario.email } ?: otroId
-                        _nombresUsuarios.value = _nombresUsuarios.value + (otroId to nombre)
-                    }
+            .filter { it !in participantesConEscucha }
+            .forEach { otroId ->
+                participantesConEscucha.add(otroId)
+                viewModelScope.launch {
+                    userRemoteDataSource.getById(otroId)
+                        .catch { }
+                        .collect { usuario ->
+                            val nombre = usuario?.name?.ifBlank { usuario.email } ?: otroId
+                            _nombresUsuarios.value = _nombresUsuarios.value + (otroId to nombre)
+                        }
+                }
             }
-        }
     }
 
     private fun cargarImagenesProductos(chats: List<Chat>) {
-        chats.filter { it.productImage.isNotBlank() }.forEach { chat ->
-            viewModelScope.launch {
-                storageDataSource.getImageUrl(chat.productImage)
-                    .catch { }
-                    .collect { resultado ->
-                        resultado.getOrNull()?.let { url ->
-                            _urlsProductos.value = _urlsProductos.value + (chat.id to url)
+        chats
+            .filter { it.productImage.isNotBlank() && it.id !in productosConEscucha }
+            .forEach { chat ->
+                productosConEscucha.add(chat.id)
+                viewModelScope.launch {
+                    storageDataSource.getImageUrl(chat.productImage)
+                        .catch { }
+                        .collect { resultado ->
+                            resultado.getOrNull()?.let { url ->
+                                _urlsProductos.value = _urlsProductos.value + (chat.id to url)
+                            }
                         }
-                    }
+                }
             }
-        }
     }
 
     fun obtenerOtroParticipanteId(chat: Chat): String =

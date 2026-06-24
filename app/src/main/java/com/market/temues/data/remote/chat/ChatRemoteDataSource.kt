@@ -21,10 +21,7 @@ class ChatRemoteDataSource @Inject constructor(
             .whereArrayContains("participants", userId)
             .orderBy("lastMessageTimestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
+                if (error != null) return@addSnapshotListener
                 val chats = snapshot?.documents?.mapNotNull {
                     it.toObject(Chat::class.java)?.copy(id = it.id)
                 } ?: emptyList()
@@ -36,10 +33,7 @@ class ChatRemoteDataSource @Inject constructor(
     fun getById(chatId: String): Flow<Chat?> = callbackFlow {
         val registration = collection.document(chatId)
             .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
+                if (error != null) return@addSnapshotListener
                 val chat = snapshot?.toObject(Chat::class.java)?.copy(id = snapshot.id)
                 trySend(chat)
             }

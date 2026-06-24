@@ -2,6 +2,7 @@ package com.market.temues.ui.chat
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -86,6 +87,22 @@ class MensajesAdapter(
         fun vincular(mensaje: Message) {
             binding.txtTextoMensaje.text = mensaje.text
             binding.txtHoraMensaje.text = formatearHora(mensaje.timestamp)
+            mostrarEstadoLeido(mensaje.isRead)
+        }
+
+        private fun mostrarEstadoLeido(leido: Boolean) {
+            val ctx = binding.root.context
+            if (leido) {
+                binding.imgEstadoLeido.setImageResource(R.drawable.ic_check_doble)
+                binding.imgEstadoLeido.setColorFilter(
+                    ContextCompat.getColor(ctx, R.color.temues_green)
+                )
+            } else {
+                binding.imgEstadoLeido.setImageResource(R.drawable.ic_check_simple)
+                binding.imgEstadoLeido.setColorFilter(
+                    ContextCompat.getColor(ctx, R.color.temues_text_muted)
+                )
+            }
         }
     }
 
@@ -106,6 +123,24 @@ class MensajesAdapter(
                 if (reproduciendo) R.drawable.ic_pause else R.drawable.ic_play
             )
             binding.btnReproducirAudio.setOnClickListener { alReproducir(mensaje) }
+            mostrarEstadoLeido(mensaje.isRead)
+        }
+
+        private fun mostrarEstadoLeido(leido: Boolean) {
+            val ctx = binding.root.context
+            if (leido) {
+                binding.imgEstadoLeido.setImageResource(R.drawable.ic_check_doble)
+                binding.imgEstadoLeido.setColorFilter(
+                    ContextCompat.getColor(ctx, R.color.white)
+                )
+            } else {
+                binding.imgEstadoLeido.setImageResource(R.drawable.ic_check_simple)
+                binding.imgEstadoLeido.setColorFilter(
+                    ContextCompat.getColor(ctx, R.color.white)
+                )
+                binding.imgEstadoLeido.alpha = 0.6f
+            }
+            if (leido) binding.imgEstadoLeido.alpha = 1f
         }
     }
 
